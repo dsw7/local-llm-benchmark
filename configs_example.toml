@@ -1,0 +1,18 @@
+[misc]
+prompt = "Generate C code for reading a file. Only return the code. No explanation is needed."
+model = "devstral-small-2"
+rounds = 3
+
+[[servers]]
+host = "localhost"
+port = 11434
+
+# [[servers]]
+# host = "127.0.0.1"
+# port = 11434
+
+# [[servers]]
+# host = "127.0.0.2"
+# port = 11434
+
+# Add additional machines...

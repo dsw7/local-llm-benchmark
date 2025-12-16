@@ -46,3 +46,6 @@ requirements.txt
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Project config
+configs.toml
