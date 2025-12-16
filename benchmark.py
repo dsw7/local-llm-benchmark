@@ -2,8 +2,10 @@
 
 import sys
 import tomllib
+from collections import defaultdict
 from dataclasses import dataclass
 from os import path
+from statistics import mean, stdev
 from time import time
 from typing import Any
 from ollama import Client
@@ -57,7 +59,16 @@ def check_and_load_config() -> Configs:
     return configs
 
 
-def run_queries(client: Client, prompt: str, model: str) -> None:
+@dataclass
+class Stats:
+    exec_time: float
+    host: str
+    model: str
+
+
+def run_queries(host: str, prompt: str, model: str) -> Stats:
+    client = Client(host)
+
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
 
@@ -68,6 +79,39 @@ def run_queries(client: Client, prompt: str, model: str) -> None:
     total_time = round(time() - time_start, 2)
     print(f"\nExecution time: {total_time}s")
 
+    return Stats(exec_time=total_time, host=host, model=model)
+
+
+def reject_outliers(data: list[float], m: int = 2) -> list[float]:
+    mean_val = mean(data)
+    stdev_val = stdev(data)
+    return [x for x in data if abs(x - mean_val) < m * stdev_val]
+
+
+def process_stats(stats: list[Stats]) -> None:
+    grouped_data = defaultdict(list)
+    for stat in stats:
+        key = (stat.host, stat.model)
+        grouped_data[key].append(stat.exec_time)
+
+    results = {}
+
+    for key, exec_times in grouped_data.items():
+        filtered_times = reject_outliers(exec_times)
+
+        if len(filtered_times) < 2:
+            mean_val = mean(filtered_times)
+            stdev_val = 0.0
+        else:
+            mean_val = mean(filtered_times)
+            stdev_val = stdev(filtered_times)
+
+        results[key] = {"mean": mean_val, "stdev": stdev_val}
+
+    print("-" * 100)
+    for key, value in results.items():
+        print(key, value)
+
 
 def main() -> None:
     try:
@@ -75,11 +119,13 @@ def main() -> None:
     except ConfigError as e:
         sys.exit(str(e))
 
-    clients = [Client(host=server) for server in configs.servers]
+    stats: list[Stats] = []
 
-    for client in clients:
+    for server in configs.servers:
         for _ in range(configs.rounds):
-            run_queries(client, configs.prompt, configs.model)
+            stats.append(run_queries(server, configs.prompt, configs.model))
+
+    process_stats(stats)
 
 
 if __name__ == "__main__":
