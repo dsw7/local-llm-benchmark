@@ -1,13 +1,22 @@
 # Local LLM benchmarking
-Miscellenous utilities for benchmarking locally hosted LLMs for various platform/hardware permutations.
+Miscellenous utilities for benchmarking locally hosted LLMs for various
+platform/hardware permutations.
 
-## Usage
+## Benchmarking LLM performance
+### About
+This script runs a dummy prompt on several machines and several times. The
+execution times are gathered from which the means and standard deviations are
+calcaluted. Outlier execution times are rejected in order to account for Ollama
+models being reloaded after a period of inactivity.
+
+### Usage
 Copy the example TOML file:
 ```bash
 cp configs_example.toml configs.toml
 ```
-The `configs.toml` file is the "production" file and is excluded via `.gitignore`. Set up a virtual environment
-and run:
+The `configs.toml` file is the "production" file and is excluded via
+`.gitignore`. Edit the file to match your specifications (i.e. set the dummy
+prompt and IP addresses). Then set up a virtual environment and run:
 ```bash
 chmod +x benchmark.py && ./benchmark.py
 ```
