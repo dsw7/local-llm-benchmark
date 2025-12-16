@@ -9,6 +9,7 @@ from statistics import mean, stdev
 from time import time
 from typing import Any
 from ollama import Client
+import requests
 
 
 @dataclass
@@ -113,10 +114,20 @@ def process_stats(stats: list[Stats]) -> None:
         print(key, value)
 
 
+def check_servers_up(servers: list[str]) -> None:
+    for server in servers:
+        requests.get(f"http://{server}", timeout=5)
+
+
 def main() -> None:
     try:
         configs = check_and_load_config()
     except ConfigError as e:
+        sys.exit(str(e))
+
+    try:
+        check_servers_up(configs.servers)
+    except requests.exceptions.ConnectionError as e:
         sys.exit(str(e))
 
     stats: list[Stats] = []
