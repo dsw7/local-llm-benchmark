@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import sys
 import tomllib
 from collections import defaultdict
@@ -10,6 +11,13 @@ from time import time
 from typing import Any
 from ollama import Client
 import requests
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(asctime)s: %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -73,14 +81,14 @@ def run_queries(host: str, prompt: str, model: str) -> Stats:
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
 
-    print("-" * 100)
-    print(f"[{host}] [{model}]\n")
+    logger.info("-" * 100)
+    logger.info(f"[{host}] [{model}]")
 
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
 
     total_time = round(time() - time_start, 2)
-    print(f"\nExecution time: {total_time}s")
+    logger.info(f"Execution time: {total_time}s")
 
     return Stats(exec_time=total_time, host=host, model=model)
 
@@ -111,9 +119,9 @@ def process_stats(stats: list[Stats]) -> None:
 
         results[key] = {"mean": mean_val, "stdev": stdev_val}
 
-    print("-" * 100)
+    logger.info("-" * 100)
     for key, value in results.items():
-        print(key, value)
+        logger.info(f"{key} {value}")
 
 
 def check_servers_up(servers: list[str]) -> None:
