@@ -74,6 +74,8 @@ def run_queries(host: str, prompt: str, model: str) -> Stats:
     stream = client.generate(model=model, prompt=prompt, stream=True)
 
     print("-" * 100)
+    print(f"[{host}] [{model}]\n")
+
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
 
@@ -132,9 +134,12 @@ def main() -> None:
 
     stats: list[Stats] = []
 
-    for server in configs.servers:
-        for _ in range(configs.rounds):
-            stats.append(run_queries(server, configs.prompt, configs.model))
+    try:
+        for server in configs.servers:
+            for _ in range(configs.rounds):
+                stats.append(run_queries(server, configs.prompt, configs.model))
+    except KeyboardInterrupt:
+        sys.exit("\nBenchmarking was manually aborted!")
 
     process_stats(stats)
 
