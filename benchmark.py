@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import functools
 import logging
 import sys
 import tomllib
-import functools
 from collections import defaultdict
 from dataclasses import dataclass
 from os import path
@@ -21,6 +21,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@functools.cache
+def get_client(host: str) -> Client:
+    return Client(host)
+
+
+def clamp_num_rounds(rounds: int) -> int:
+    # minimum of 2 rounds needed to calculate standard deviation
+    return max(2, min(rounds, 10))
+
+
+def check_servers_up(servers: list[str]) -> None:
+    for server in servers:
+        requests.get(f"http://{server}", timeout=5)
+
+
 @dataclass
 class Configs:
     prompt: str
@@ -36,11 +51,6 @@ class ConfigError(Exception):
 
     def __str__(self) -> str:
         return f"ConfigError: {self.message}"
-
-
-def clamp_num_rounds(rounds: int) -> int:
-    # minimum of 2 rounds needed to calculate standard deviation
-    return max(2, min(rounds, 10))
 
 
 def check_and_load_config() -> Configs:
@@ -75,11 +85,6 @@ class Stats:
     exec_time: float
     host: str
     model: str
-
-
-@functools.cache
-def get_client(host: str) -> Client:
-    return Client(host)
 
 
 def run_queries(host: str, prompt: str, model: str) -> Stats:
@@ -129,11 +134,6 @@ def process_stats(stats: list[Stats]) -> None:
     logger.info("-" * 100)
     for key, value in results.items():
         logger.info(f"{key} {value}")
-
-
-def check_servers_up(servers: list[str]) -> None:
-    for server in servers:
-        requests.get(f"http://{server}", timeout=5)
 
 
 def main() -> None:
