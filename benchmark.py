@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import functools
 import logging
 import sys
 import tomllib
@@ -20,6 +21,35 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@functools.cache
+def get_client(host: str) -> Client:
+    return Client(host)
+
+
+def clamp_num_rounds(rounds: int) -> int:
+    # minimum of 2 rounds needed to calculate standard deviation
+    return max(2, min(rounds, 10))
+
+
+def check_servers_up(servers: list[str]) -> None:
+    for server in servers:
+        requests.get(f"http://{server}", timeout=5)
+
+
+def check_model_exists(servers: list[str], model: str) -> None:
+    for server in servers:
+        client = get_client(server)
+        response = client.list()
+
+        for list_model in response.models:
+            if list_model.model == model:
+                break
+        else:
+            raise ValueError(
+                f"Model '{model}' not found on server '{server.split(':')[0]}'"
+            )
+
+
 @dataclass
 class Configs:
     prompt: str
@@ -35,11 +65,6 @@ class ConfigError(Exception):
 
     def __str__(self) -> str:
         return f"ConfigError: {self.message}"
-
-
-def clamp_num_rounds(rounds: int) -> int:
-    # minimum of 2 rounds needed to calculate standard deviation
-    return max(2, min(rounds, 10))
 
 
 def check_and_load_config() -> Configs:
@@ -77,7 +102,7 @@ class Stats:
 
 
 def run_queries(host: str, prompt: str, model: str) -> Stats:
-    client = Client(host)
+    client = get_client(host)
 
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
@@ -125,11 +150,6 @@ def process_stats(stats: list[Stats]) -> None:
         logger.info(f"{key} {value}")
 
 
-def check_servers_up(servers: list[str]) -> None:
-    for server in servers:
-        requests.get(f"http://{server}", timeout=5)
-
-
 def main() -> None:
     try:
         configs = check_and_load_config()
@@ -139,6 +159,11 @@ def main() -> None:
     try:
         check_servers_up(configs.servers)
     except requests.exceptions.ConnectionError as e:
+        sys.exit(str(e))
+
+    try:
+        check_model_exists(configs.servers, configs.model)
+    except ValueError as e:
         sys.exit(str(e))
 
     stats: list[Stats] = []
