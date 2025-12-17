@@ -38,7 +38,8 @@ class ConfigError(Exception):
 
 
 def clamp_num_rounds(rounds: int) -> int:
-    return max(1, min(rounds, 10))
+    # minimum of 2 rounds needed to calculate standard deviation
+    return max(2, min(rounds, 10))
 
 
 def check_and_load_config() -> Configs:
