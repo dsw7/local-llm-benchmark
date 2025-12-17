@@ -36,6 +36,20 @@ def check_servers_up(servers: list[str]) -> None:
         requests.get(f"http://{server}", timeout=5)
 
 
+def check_model_exists(servers: list[str], model: str) -> None:
+    for server in servers:
+        client = get_client(server)
+        response = client.list()
+
+        for list_model in response.models:
+            if list_model.model == model:
+                break
+        else:
+            raise ValueError(
+                f"Model '{model}' not found on server '{server.split(':')[0]}'"
+            )
+
+
 @dataclass
 class Configs:
     prompt: str
@@ -145,6 +159,11 @@ def main() -> None:
     try:
         check_servers_up(configs.servers)
     except requests.exceptions.ConnectionError as e:
+        sys.exit(str(e))
+
+    try:
+        check_model_exists(configs.servers, configs.model)
+    except ValueError as e:
         sys.exit(str(e))
 
     stats: list[Stats] = []
