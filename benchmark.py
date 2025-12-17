@@ -3,6 +3,7 @@
 import logging
 import sys
 import tomllib
+import functools
 from collections import defaultdict
 from dataclasses import dataclass
 from os import path
@@ -76,8 +77,13 @@ class Stats:
     model: str
 
 
+@functools.cache
+def get_client(host: str) -> Client:
+    return Client(host)
+
+
 def run_queries(host: str, prompt: str, model: str) -> Stats:
-    client = Client(host)
+    client = get_client(host)
 
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
