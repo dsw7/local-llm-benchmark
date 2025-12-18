@@ -146,8 +146,12 @@ def process_stats(stats: list[Stats]) -> None:
         results[key] = {"mean": mean_val, "stdev": stdev_val}
 
     logger.info("-" * 100)
+    print(f"{'Host':<20}{'Model':<20}{'Mean (s)':<20}{'SD (s)':<20}")
+
     for key, value in results.items():
-        logger.info(f"{key} {value}")
+        host, model = key
+        _mean, _stdev = round(value["mean"], 3), round(value["stdev"], 3)
+        print(f"{host:<20}{model:<20}{_mean:<20}{_stdev:<20}")
 
 
 def main() -> None:
