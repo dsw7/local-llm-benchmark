@@ -125,13 +125,21 @@ def reject_outliers(data: list[float], m: int = 2) -> list[float]:
     return [x for x in data if abs(x - mean_val) < m * stdev_val]
 
 
-def process_stats(stats: list[Stats]) -> None:
+@dataclass
+class Summary:
+    host: str
+    mean: float
+    model: str
+    stdev: float
+
+
+def process_stats(stats: list[Stats]) -> list[Summary]:
     grouped_data = defaultdict(list)
     for stat in stats:
         key = (stat.host, stat.model)
         grouped_data[key].append(stat.exec_time)
 
-    results = {}
+    summary = []
 
     for key, exec_times in grouped_data.items():
         filtered_times = reject_outliers(exec_times)
@@ -143,15 +151,24 @@ def process_stats(stats: list[Stats]) -> None:
             mean_val = mean(filtered_times)
             stdev_val = stdev(filtered_times)
 
-        results[key] = {"mean": mean_val, "stdev": stdev_val}
+        summary.append(
+            Summary(
+                host=key[0],
+                mean=round(mean_val, 3),
+                model=key[1],
+                stdev=round(stdev_val, 3),
+            )
+        )
 
+    return summary
+
+
+def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
     print(f"{'Host':<20}{'Model':<30}{'Mean (s)':<20}{'SD (s)':<20}")
 
-    for key, value in results.items():
-        host, model = key
-        _mean, _stdev = round(value["mean"], 3), round(value["stdev"], 3)
-        print(f"{host:<20}{model:<30}{_mean:<20}{_stdev:<20}")
+    for item in summary:
+        print(f"{item.host:<20}{item.model:<30}{item.mean:<20}{item.stdev:<20}")
 
 
 def main() -> None:
@@ -179,7 +196,8 @@ def main() -> None:
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
-    process_stats(stats)
+    summary: list[Summary] = process_stats(stats)
+    print_summary(summary)
 
 
 if __name__ == "__main__":
