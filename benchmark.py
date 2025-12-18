@@ -21,6 +21,38 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class Configs:
+    prompt: str
+    model: str
+    rounds: int
+    servers: list[str]
+
+
+@dataclass
+class Stats:
+    exec_time: float
+    host: str
+    model: str
+
+
+@dataclass
+class Summary:
+    host: str
+    mean: float
+    model: str
+    stdev: float
+
+
+class ConfigError(Exception):
+    def __init__(self, message: str, *args: Any):
+        self.message = message
+        self.args = args
+
+    def __str__(self) -> str:
+        return f"ConfigError: {self.message}"
+
+
 @functools.cache
 def get_client(host: str) -> Client:
     return Client(host)
@@ -50,21 +82,10 @@ def check_model_exists(servers: list[str], model: str) -> None:
             )
 
 
-@dataclass
-class Configs:
-    prompt: str
-    model: str
-    rounds: int
-    servers: list[str]
-
-
-class ConfigError(Exception):
-    def __init__(self, message: str, *args: Any):
-        self.message = message
-        self.args = args
-
-    def __str__(self) -> str:
-        return f"ConfigError: {self.message}"
+def reject_outliers(data: list[float], m: int = 2) -> list[float]:
+    mean_val = mean(data)
+    stdev_val = stdev(data)
+    return [x for x in data if abs(x - mean_val) < m * stdev_val]
 
 
 def check_and_load_config() -> Configs:
@@ -94,13 +115,6 @@ def check_and_load_config() -> Configs:
     return configs
 
 
-@dataclass
-class Stats:
-    exec_time: float
-    host: str
-    model: str
-
-
 def run_queries(host: str, prompt: str, model: str) -> Stats:
     client = get_client(host)
 
@@ -117,20 +131,6 @@ def run_queries(host: str, prompt: str, model: str) -> Stats:
     logger.info(f"Execution time: {total_time}s")
 
     return Stats(exec_time=total_time, host=host, model=model)
-
-
-def reject_outliers(data: list[float], m: int = 2) -> list[float]:
-    mean_val = mean(data)
-    stdev_val = stdev(data)
-    return [x for x in data if abs(x - mean_val) < m * stdev_val]
-
-
-@dataclass
-class Summary:
-    host: str
-    mean: float
-    model: str
-    stdev: float
 
 
 def process_stats(stats: list[Stats]) -> list[Summary]:
