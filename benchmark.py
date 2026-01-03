@@ -105,14 +105,8 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
     summary = []
 
     for key, exec_times in grouped_data.items():
-        filtered_times = core.reject_outliers(exec_times)
-
-        if len(filtered_times) < 2:
-            mean_val = mean(filtered_times)
-            stdev_val = 0.0
-        else:
-            mean_val = mean(filtered_times)
-            stdev_val = stdev(filtered_times)
+        mean_val = mean(exec_times)
+        stdev_val = stdev(exec_times)
 
         summary.append(
             Summary(
