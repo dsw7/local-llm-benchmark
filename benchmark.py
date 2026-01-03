@@ -7,6 +7,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from statistics import mean, stdev, median
 from time import time
+from colorama import Back, Style
 from ollama import Client
 from tabulate import tabulate
 import requests
@@ -71,14 +72,14 @@ def preload_models(servers: list[str], model: str) -> None:
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
-def run_query(host: str, prompt: str, model: str) -> Stats:
+def run_query(host: str, prompt: str, model: str, run: int) -> Stats:
     client = get_client(host)
+
+    logger.info("-" * 100)
+    logger.info(Back.GREEN + f"Run {run} | {host} | {model}" + Style.RESET_ALL)
 
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
-
-    logger.info("-" * 100)
-    logger.info(f"[{host}] [{model}]")
 
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
@@ -95,8 +96,8 @@ def run_queries(
     stats = []
 
     for server in servers:
-        for _ in range(num_rounds):
-            stats.append(run_query(server, prompt, model))
+        for run in range(1, num_rounds + 1):
+            stats.append(run_query(server, prompt, model, run))
 
     return stats
 
