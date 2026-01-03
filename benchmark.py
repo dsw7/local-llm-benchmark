@@ -34,6 +34,8 @@ class Summary:
     mean: float
     stdev: float
     median: float
+    min_val: float
+    max_val: float
     sample_size: int
 
 
@@ -115,11 +117,13 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
         summary.append(
             Summary(
                 host=key[0],
-                mean=round(mean_val, 3),
+                mean=round(mean_val, 5),
                 model=key[1],
                 sample_size=len(exec_times),
-                stdev=round(stdev_val, 3),
-                median=round(median_val, 3),
+                stdev=round(stdev_val, 5),
+                median=round(median_val, 5),
+                min_val=min(exec_times),
+                max_val=max(exec_times),
             )
         )
 
@@ -130,7 +134,7 @@ def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
     print("\nAll values are provided in seconds")
 
-    headers = ["Host", "Model", "Mean", "SD", "Median", "Sample size"]
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
     print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
