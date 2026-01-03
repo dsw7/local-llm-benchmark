@@ -5,7 +5,7 @@ import logging
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from statistics import mean, stdev
+from statistics import mean, stdev, median
 from time import time
 from ollama import Client
 from tabulate import tabulate
@@ -33,6 +33,9 @@ class Summary:
     model: str
     mean: float
     stdev: float
+    median: float
+    min_val: float
+    max_val: float
     sample_size: int
 
 
@@ -80,8 +83,8 @@ def run_query(host: str, prompt: str, model: str) -> Stats:
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
 
-    total_time = round(time() - time_start, 2)
-    logger.info(f"Execution time: {total_time}s")
+    total_time = time() - time_start
+    logger.info(f"Execution time: {total_time:.3f}s")
 
     return Stats(exec_time=total_time, host=host, model=model)
 
@@ -109,14 +112,18 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
     for key, exec_times in grouped_data.items():
         mean_val = mean(exec_times)
         stdev_val = stdev(exec_times)
+        median_val = median(exec_times)
 
         summary.append(
             Summary(
                 host=key[0],
-                mean=round(mean_val, 3),
+                mean=round(mean_val, 5),
                 model=key[1],
                 sample_size=len(exec_times),
-                stdev=round(stdev_val, 3),
+                stdev=round(stdev_val, 5),
+                median=round(median_val, 5),
+                min_val=min(exec_times),
+                max_val=max(exec_times),
             )
         )
 
@@ -125,9 +132,9 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
 
 def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
-    print()
+    print("\nAll values are provided in seconds")
 
-    headers = ["Host", "Model", "Mean (s)", "SD (s)", "Sample size"]
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
     print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
