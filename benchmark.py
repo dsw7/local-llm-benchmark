@@ -44,7 +44,7 @@ def check_servers_up(servers: list[str]) -> None:
         requests.get(f"http://{server}", timeout=5)
 
 
-def check_model_exists(servers: list[str], model: str) -> None:
+def check_models_exist(servers: list[str], model: str) -> None:
     for server in servers:
         client = get_client(server)
         response = client.list()
@@ -56,6 +56,14 @@ def check_model_exists(servers: list[str], model: str) -> None:
             raise ValueError(
                 f"Model '{model}' not found on server '{server.split(':')[0]}'"
             )
+
+
+def preload_models(servers: list[str], model: str) -> None:
+    for server in servers:
+        client = get_client(server)
+        logger.info("Preloading %s on server %s", model, server)
+
+        client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
 def run_query(host: str, prompt: str, model: str) -> Stats:
@@ -138,9 +146,11 @@ def main() -> None:
         sys.exit(str(e))
 
     try:
-        check_model_exists(configs.servers, configs.model)
+        check_models_exist(configs.servers, configs.model)
     except ValueError as e:
         sys.exit(str(e))
+
+    preload_models(configs.servers, configs.model)
 
     try:
         stats = run_queries(
