@@ -3,15 +3,13 @@
 import functools
 import logging
 import sys
-import tomllib
 from collections import defaultdict
 from dataclasses import dataclass
-from os import path
 from statistics import mean, stdev
 from time import time
-from typing import Any
 from ollama import Client
 import requests
+import core
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,14 +17,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Configs:
-    prompt: str
-    model: str
-    rounds: int
-    servers: list[str]
 
 
 @dataclass
@@ -44,23 +34,9 @@ class Summary:
     stdev: float
 
 
-class ConfigError(Exception):
-    def __init__(self, message: str, *args: Any):
-        self.message = message
-        self.args = args
-
-    def __str__(self) -> str:
-        return f"ConfigError: {self.message}"
-
-
 @functools.cache
 def get_client(host: str) -> Client:
     return Client(host)
-
-
-def clamp_num_rounds(rounds: int) -> int:
-    # minimum of 2 rounds needed to calculate standard deviation
-    return max(2, min(rounds, 10))
 
 
 def check_servers_up(servers: list[str]) -> None:
@@ -68,7 +44,7 @@ def check_servers_up(servers: list[str]) -> None:
         requests.get(f"http://{server}", timeout=5)
 
 
-def check_model_exists(servers: list[str], model: str) -> None:
+def check_models_exist(servers: list[str], model: str) -> None:
     for server in servers:
         client = get_client(server)
         response = client.list()
@@ -82,40 +58,15 @@ def check_model_exists(servers: list[str], model: str) -> None:
             )
 
 
-def reject_outliers(data: list[float], m: int = 2) -> list[float]:
-    mean_val = mean(data)
-    stdev_val = stdev(data)
-    return [x for x in data if abs(x - mean_val) < m * stdev_val]
+def preload_models(servers: list[str], model: str) -> None:
+    for server in servers:
+        client = get_client(server)
+        logger.info("Preloading %s on server %s", model, server)
+
+        client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
-def check_and_load_config() -> Configs:
-    config_file = "configs.toml"
-
-    if not path.exists(config_file):
-        raise ConfigError(f"The file {config_file} does not exist.")
-
-    with open(config_file, "rb") as f:
-        try:
-            config_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError as e:
-            raise ConfigError("Configurations can't be decoded", e) from e
-
-    servers = [f'{s["host"]}:{s["port"]}' for s in config_data["servers"]]
-
-    try:
-        configs = Configs(
-            prompt=config_data["misc"]["prompt"],
-            model=config_data["misc"]["model"],
-            rounds=clamp_num_rounds(config_data["misc"]["rounds"]),
-            servers=servers,
-        )
-    except KeyError as e:
-        raise ConfigError("One or more configurations is missing", e) from e
-
-    return configs
-
-
-def run_queries(host: str, prompt: str, model: str) -> Stats:
+def run_query(host: str, prompt: str, model: str) -> Stats:
     client = get_client(host)
 
     time_start = time()
@@ -133,6 +84,18 @@ def run_queries(host: str, prompt: str, model: str) -> Stats:
     return Stats(exec_time=total_time, host=host, model=model)
 
 
+def run_queries(
+    servers: list[str], num_rounds: int, prompt: str, model: str
+) -> list[Stats]:
+    stats = []
+
+    for server in servers:
+        for _ in range(num_rounds):
+            stats.append(run_query(server, prompt, model))
+
+    return stats
+
+
 def process_stats(stats: list[Stats]) -> list[Summary]:
     grouped_data = defaultdict(list)
     for stat in stats:
@@ -142,14 +105,8 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
     summary = []
 
     for key, exec_times in grouped_data.items():
-        filtered_times = reject_outliers(exec_times)
-
-        if len(filtered_times) < 2:
-            mean_val = mean(filtered_times)
-            stdev_val = 0.0
-        else:
-            mean_val = mean(filtered_times)
-            stdev_val = stdev(filtered_times)
+        mean_val = mean(exec_times)
+        stdev_val = stdev(exec_times)
 
         summary.append(
             Summary(
@@ -173,8 +130,8 @@ def print_summary(summary: list[Summary]) -> None:
 
 def main() -> None:
     try:
-        configs = check_and_load_config()
-    except ConfigError as e:
+        configs = core.check_and_load_config()
+    except core.ConfigError as e:
         sys.exit(str(e))
 
     try:
@@ -183,16 +140,16 @@ def main() -> None:
         sys.exit(str(e))
 
     try:
-        check_model_exists(configs.servers, configs.model)
+        check_models_exist(configs.servers, configs.model)
     except ValueError as e:
         sys.exit(str(e))
 
-    stats: list[Stats] = []
+    preload_models(configs.servers, configs.model)
 
     try:
-        for server in configs.servers:
-            for _ in range(configs.rounds):
-                stats.append(run_queries(server, configs.prompt, configs.model))
+        stats = run_queries(
+            configs.servers, configs.rounds, configs.prompt, configs.model
+        )
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
