@@ -28,7 +28,7 @@ class ExecTimes:
 
 
 @dataclass
-class Summary:
+class ExecTimeStats:
     host: str
     model: str
     mean: float
@@ -105,36 +105,36 @@ def run_and_time_queries(
     return results
 
 
-def get_stats_from_exec_times(results: list[ExecTimes]) -> list[Summary]:
-    summary = []
+def get_stats_from_exec_times(results: list[ExecTimes]) -> list[ExecTimeStats]:
+    stats = []
 
     for item in results:
-        mean_val = mean(item.exec_times)
-        stdev_val = stdev(item.exec_times)
-        median_val = median(item.exec_times)
+        mean_val = round(mean(item.exec_times), 5)
+        stdev_val = round(stdev(item.exec_times), 5)
+        median_val = round(median(item.exec_times), 5)
 
-        summary.append(
-            Summary(
+        stats.append(
+            ExecTimeStats(
                 host=item.host,
-                mean=round(mean_val, 5),
+                max_val=max(item.exec_times),
+                mean=mean_val,
+                median=median_val,
+                min_val=min(item.exec_times),
                 model=item.model,
                 sample_size=len(item.exec_times),
-                stdev=round(stdev_val, 5),
-                median=round(median_val, 5),
-                min_val=min(item.exec_times),
-                max_val=max(item.exec_times),
+                stdev=stdev_val,
             )
         )
 
-    return summary
+    return stats
 
 
-def print_summary(summary: list[Summary]) -> None:
+def print_summary(stats: list[ExecTimeStats]) -> None:
     logger.info("-" * 100)
-    print("\nAll values are provided in seconds")
+    print("\n* All values are provided in seconds")
 
     headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
-    print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
+    print(tabulate(stats, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
 def main() -> None:
@@ -156,14 +156,14 @@ def main() -> None:
     preload_models(configs.servers, configs.model)
 
     try:
-        stats = run_and_time_queries(
+        exec_times: list[ExecTimes] = run_and_time_queries(
             configs.servers, configs.rounds, configs.prompt, configs.model
         )
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
-    summary: list[Summary] = get_stats_from_exec_times(stats)
-    print_summary(summary)
+    stats: list[ExecTimeStats] = get_stats_from_exec_times(exec_times)
+    print_summary(stats)
 
 
 if __name__ == "__main__":
