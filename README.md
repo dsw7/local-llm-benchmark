@@ -2,6 +2,9 @@
 Miscellenous utilities for benchmarking locally hosted LLMs for various
 platform/hardware permutations.
 
+I use this program to benchmark my infrastructure for the following cases:
+- When running [FuncGraft](https://github.com/dsw7/FuncGraft) in [local mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#togging-between-llm-providers)
+
 ## Benchmarking LLM performance
 ### About
 This script runs a dummy prompt against a specified LLM on several machines and
