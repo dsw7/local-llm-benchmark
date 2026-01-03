@@ -9,9 +9,10 @@ I use this program to benchmark my infrastructure for the following cases:
 ## Benchmarking LLM performance
 ### About
 This script runs a dummy prompt against a specified LLM on several machines and
-several times. The execution times are gathered from which the means and
-standard deviations are calcaluted. I use this program mainly to fine tune
-my hardware configurations.
+several times. The execution times are gathered from which various basic
+statistics are computed. This allows me to get a rough estimation of how
+variables such as GPU models, available VRAM, etc., impact the overall
+performance of my LLMs on prem.
 
 ### Usage
 Copy the example TOML file:
@@ -26,11 +27,11 @@ chmod +x benchmark.py && ./benchmark.py
 ```
 When complete, the program will output something akin to:
 ```
-┌──────────────────┬───────────────┬────────────┬──────────┬───────────────┐
-│ Host             │ Model         │   Mean (s) │   SD (s) │   Sample size │
-├──────────────────┼───────────────┼────────────┼──────────┼───────────────┤
-│ localhost:11434  │ gemma3:latest │      2.19  │    0.036 │             3 │
-│ 10.0.0.115:11434 │ gemma3:latest │     21.393 │    3.639 │             3 │
-│ 10.0.0.243:11434 │ gemma3:latest │      8.455 │    0.024 │             3 │
-└──────────────────┴───────────────┴────────────┴──────────┴───────────────┘
+All values are provided in seconds
+┌──────────────────┬───────────────┬──────────┬─────────┬──────────┬──────────┬──────────┬───────────────┐
+│ Host             │ Model         │     Mean │      SD │   Median │      Min │      Max │   Sample size │
+├──────────────────┼───────────────┼──────────┼─────────┼──────────┼──────────┼──────────┼───────────────┤
+│ localhost:11434  │ gemma3:latest │  2.18015 │ 0.16028 │  2.10775 │  2.09112 │  2.46496 │             5 │
+│ 10.0.0.115:11434 │ gemma3:latest │ 18.0551  │ 0.62221 │ 17.9943  │ 17.3745  │ 19.0215  │             5 │
+└──────────────────┴───────────────┴──────────┴─────────┴──────────┴──────────┴──────────┴───────────────┘
 ```
