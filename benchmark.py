@@ -15,7 +15,7 @@ import core
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(levelname)s: %(asctime)s: %(message)s",
+    format="%(levelname)s %(asctime)s %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
