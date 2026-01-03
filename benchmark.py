@@ -58,7 +58,7 @@ def check_model_exists(servers: list[str], model: str) -> None:
             )
 
 
-def run_queries(host: str, prompt: str, model: str) -> Stats:
+def run_query(host: str, prompt: str, model: str) -> Stats:
     client = get_client(host)
 
     time_start = time()
@@ -74,6 +74,18 @@ def run_queries(host: str, prompt: str, model: str) -> Stats:
     logger.info(f"Execution time: {total_time}s")
 
     return Stats(exec_time=total_time, host=host, model=model)
+
+
+def run_queries(
+    servers: list[str], num_rounds: int, prompt: str, model: str
+) -> list[Stats]:
+    stats = []
+
+    for server in servers:
+        for _ in range(num_rounds):
+            stats.append(run_query(server, prompt, model))
+
+    return stats
 
 
 def process_stats(stats: list[Stats]) -> list[Summary]:
@@ -130,12 +142,10 @@ def main() -> None:
     except ValueError as e:
         sys.exit(str(e))
 
-    stats: list[Stats] = []
-
     try:
-        for server in configs.servers:
-            for _ in range(configs.rounds):
-                stats.append(run_queries(server, configs.prompt, configs.model))
+        stats = run_queries(
+            configs.servers, configs.rounds, configs.prompt, configs.model
+        )
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
