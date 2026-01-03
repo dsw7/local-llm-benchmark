@@ -3,13 +3,10 @@
 import functools
 import logging
 import sys
-import tomllib
 from collections import defaultdict
 from dataclasses import dataclass
-from os import path
 from statistics import mean, stdev
 from time import time
-from typing import Any
 from ollama import Client
 import requests
 import core
@@ -20,14 +17,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Configs:
-    prompt: str
-    model: str
-    rounds: int
-    servers: list[str]
 
 
 @dataclass
@@ -43,15 +32,6 @@ class Summary:
     mean: float
     model: str
     stdev: float
-
-
-class ConfigError(Exception):
-    def __init__(self, message: str, *args: Any):
-        self.message = message
-        self.args = args
-
-    def __str__(self) -> str:
-        return f"ConfigError: {self.message}"
 
 
 @functools.cache
@@ -76,33 +56,6 @@ def check_model_exists(servers: list[str], model: str) -> None:
             raise ValueError(
                 f"Model '{model}' not found on server '{server.split(':')[0]}'"
             )
-
-
-def check_and_load_config() -> Configs:
-    config_file = "configs.toml"
-
-    if not path.exists(config_file):
-        raise ConfigError(f"The file {config_file} does not exist.")
-
-    with open(config_file, "rb") as f:
-        try:
-            config_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError as e:
-            raise ConfigError("Configurations can't be decoded", e) from e
-
-    servers = [f'{s["host"]}:{s["port"]}' for s in config_data["servers"]]
-
-    try:
-        configs = Configs(
-            prompt=config_data["misc"]["prompt"],
-            model=config_data["misc"]["model"],
-            rounds=core.clamp_num_rounds(config_data["misc"]["rounds"]),
-            servers=servers,
-        )
-    except KeyError as e:
-        raise ConfigError("One or more configurations is missing", e) from e
-
-    return configs
 
 
 def run_queries(host: str, prompt: str, model: str) -> Stats:
@@ -163,8 +116,8 @@ def print_summary(summary: list[Summary]) -> None:
 
 def main() -> None:
     try:
-        configs = check_and_load_config()
-    except ConfigError as e:
+        configs = core.check_and_load_config()
+    except core.ConfigError as e:
         sys.exit(str(e))
 
     try:
