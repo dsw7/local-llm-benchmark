@@ -3,7 +3,6 @@
 import functools
 import logging
 import sys
-from collections import defaultdict
 from dataclasses import dataclass
 from statistics import mean, stdev, median
 from time import time
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ExecTimes:
-    exec_time: float
+    exec_times: list[float]
     host: str
     model: str
 
@@ -72,11 +71,8 @@ def preload_models(servers: list[str], model: str) -> None:
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
-def run_query(host: str, prompt: str, model: str, run: int) -> ExecTimes:
+def run_query(host: str, prompt: str, model: str) -> float:
     client = get_client(host)
-
-    logger.info("-" * 100)
-    logger.info(Back.GREEN + f"Run {run} | {host} | {model}" + Style.RESET_ALL)
 
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)
@@ -84,47 +80,49 @@ def run_query(host: str, prompt: str, model: str, run: int) -> ExecTimes:
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
 
-    total_time = time() - time_start
-    logger.info(f"Execution time: {total_time:.3f}s")
-
-    return ExecTimes(exec_time=total_time, host=host, model=model)
+    return time() - time_start
 
 
 def run_queries(
     servers: list[str], num_rounds: int, prompt: str, model: str
 ) -> list[ExecTimes]:
-    stats = []
+    results = []
 
     for server in servers:
+        exec_times = []
+
         for run in range(1, num_rounds + 1):
-            stats.append(run_query(server, prompt, model, run))
+            logger.info("-" * 100)
+            logger.info(
+                Back.GREEN + f"Run {run} | {server} | {model}" + Style.RESET_ALL
+            )
+            exec_time = run_query(server, prompt, model)
+            logger.info(f"Execution time: {exec_time:.3f}s")
+            exec_times.append(exec_time)
 
-    return stats
+        results.append(ExecTimes(exec_times=exec_times, host=server, model=model))
+
+    return results
 
 
-def process_stats(stats: list[ExecTimes]) -> list[Summary]:
-    grouped_data = defaultdict(list)
-    for stat in stats:
-        key = (stat.host, stat.model)
-        grouped_data[key].append(stat.exec_time)
-
+def process_stats(results: list[ExecTimes]) -> list[Summary]:
     summary = []
 
-    for key, exec_times in grouped_data.items():
-        mean_val = mean(exec_times)
-        stdev_val = stdev(exec_times)
-        median_val = median(exec_times)
+    for item in results:
+        mean_val = mean(item.exec_times)
+        stdev_val = stdev(item.exec_times)
+        median_val = median(item.exec_times)
 
         summary.append(
             Summary(
-                host=key[0],
+                host=item.host,
                 mean=round(mean_val, 5),
-                model=key[1],
-                sample_size=len(exec_times),
+                model=item.model,
+                sample_size=len(item.exec_times),
                 stdev=round(stdev_val, 5),
                 median=round(median_val, 5),
-                min_val=min(exec_times),
-                max_val=max(exec_times),
+                min_val=min(item.exec_times),
+                max_val=max(item.exec_times),
             )
         )
 
