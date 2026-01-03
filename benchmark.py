@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Stats:
+class ExecTimes:
     exec_time: float
     host: str
     model: str
@@ -72,7 +72,7 @@ def preload_models(servers: list[str], model: str) -> None:
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
-def run_query(host: str, prompt: str, model: str, run: int) -> Stats:
+def run_query(host: str, prompt: str, model: str, run: int) -> ExecTimes:
     client = get_client(host)
 
     logger.info("-" * 100)
@@ -87,12 +87,12 @@ def run_query(host: str, prompt: str, model: str, run: int) -> Stats:
     total_time = time() - time_start
     logger.info(f"Execution time: {total_time:.3f}s")
 
-    return Stats(exec_time=total_time, host=host, model=model)
+    return ExecTimes(exec_time=total_time, host=host, model=model)
 
 
 def run_queries(
     servers: list[str], num_rounds: int, prompt: str, model: str
-) -> list[Stats]:
+) -> list[ExecTimes]:
     stats = []
 
     for server in servers:
@@ -102,7 +102,7 @@ def run_queries(
     return stats
 
 
-def process_stats(stats: list[Stats]) -> list[Summary]:
+def process_stats(stats: list[ExecTimes]) -> list[Summary]:
     grouped_data = defaultdict(list)
     for stat in stats:
         key = (stat.host, stat.model)
