@@ -20,3 +20,13 @@ prompt and IP addresses). Then set up a virtual environment and run:
 ```bash
 chmod +x benchmark.py && ./benchmark.py
 ```
+When complete, the program will output something akin to:
+```
+┌──────────────────┬───────────────┬────────────┬──────────┬───────────────┐
+│ Host             │ Model         │   Mean (s) │   SD (s) │   Sample size │
+├──────────────────┼───────────────┼────────────┼──────────┼───────────────┤
+│ localhost:11434  │ gemma3:latest │      2.19  │    0.036 │             3 │
+│ 10.0.0.115:11434 │ gemma3:latest │     21.393 │    3.639 │             3 │
+│ 10.0.0.243:11434 │ gemma3:latest │      8.455 │    0.024 │             3 │
+└──────────────────┴───────────────┴────────────┴──────────┴───────────────┘
+```

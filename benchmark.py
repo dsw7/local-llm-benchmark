@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from statistics import mean, stdev
 from time import time
 from ollama import Client
+from tabulate import tabulate
 import requests
 import core
 
@@ -29,10 +30,10 @@ class Stats:
 @dataclass
 class Summary:
     host: str
-    mean: float
     model: str
-    sample_size: int
+    mean: float
     stdev: float
+    sample_size: int
 
 
 @functools.cache
@@ -124,12 +125,10 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
 
 def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
-    print(f"{'Host':<20}{'Model':<30}{'Mean (s)':<20}{'SD (s)':<20}{'Sample size':<20}")
+    print()
 
-    for item in summary:
-        print(
-            f"{item.host:<20}{item.model:<30}{item.mean:<20}{item.stdev:<20}{item.sample_size:<20}"
-        )
+    headers = ["Host", "Model", "Mean (s)", "SD (s)", "Sample size"]
+    print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
 def main() -> None:
