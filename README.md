@@ -1,6 +1,6 @@
 # Local LLM benchmarking
-Miscellenous utilities for benchmarking locally hosted LLMs for various
-platform/hardware permutations.
+Miscellenous utilities for benchmarking locally hosted LLMs (i.e. via
+[Ollama](https://ollama.com/)) for various platform/hardware permutations.
 
 I use this program to benchmark my infrastructure for the following cases:
 - When running [FuncGraft](https://github.com/dsw7/FuncGraft) in [local
