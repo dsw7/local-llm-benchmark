@@ -83,8 +83,8 @@ def run_query(host: str, prompt: str, model: str) -> Stats:
     for chunk in stream:
         print(chunk["response"], end="", flush=True)
 
-    total_time = round(time() - time_start, 2)
-    logger.info(f"Execution time: {total_time}s")
+    total_time = time() - time_start
+    logger.info(f"Execution time: {total_time:.3f}s")
 
     return Stats(exec_time=total_time, host=host, model=model)
 
