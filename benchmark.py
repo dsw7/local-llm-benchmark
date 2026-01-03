@@ -71,7 +71,7 @@ def preload_models(servers: list[str], model: str) -> None:
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
-def run_query(host: str, prompt: str, model: str) -> float:
+def run_and_time_query(host: str, prompt: str, model: str) -> float:
     client = get_client(host)
 
     time_start = time()
@@ -83,7 +83,7 @@ def run_query(host: str, prompt: str, model: str) -> float:
     return time() - time_start
 
 
-def run_queries(
+def run_and_time_queries(
     servers: list[str], num_rounds: int, prompt: str, model: str
 ) -> list[ExecTimes]:
     results = []
@@ -96,7 +96,7 @@ def run_queries(
             logger.info(
                 Back.GREEN + f"Run {run} | {server} | {model}" + Style.RESET_ALL
             )
-            exec_time = run_query(server, prompt, model)
+            exec_time = run_and_time_query(server, prompt, model)
             logger.info(f"Execution time: {exec_time:.3f}s")
             exec_times.append(exec_time)
 
@@ -105,7 +105,7 @@ def run_queries(
     return results
 
 
-def process_stats(results: list[ExecTimes]) -> list[Summary]:
+def get_stats_from_exec_times(results: list[ExecTimes]) -> list[Summary]:
     summary = []
 
     for item in results:
@@ -156,13 +156,13 @@ def main() -> None:
     preload_models(configs.servers, configs.model)
 
     try:
-        stats = run_queries(
+        stats = run_and_time_queries(
             configs.servers, configs.rounds, configs.prompt, configs.model
         )
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
-    summary: list[Summary] = process_stats(stats)
+    summary: list[Summary] = get_stats_from_exec_times(stats)
     print_summary(summary)
 
 
