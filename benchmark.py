@@ -12,6 +12,7 @@ from time import time
 from typing import Any
 from ollama import Client
 import requests
+import core
 
 logging.basicConfig(
     level=logging.INFO,
@@ -58,11 +59,6 @@ def get_client(host: str) -> Client:
     return Client(host)
 
 
-def clamp_num_rounds(rounds: int) -> int:
-    # minimum of 2 rounds needed to calculate standard deviation
-    return max(2, min(rounds, 10))
-
-
 def check_servers_up(servers: list[str]) -> None:
     for server in servers:
         requests.get(f"http://{server}", timeout=5)
@@ -80,12 +76,6 @@ def check_model_exists(servers: list[str], model: str) -> None:
             raise ValueError(
                 f"Model '{model}' not found on server '{server.split(':')[0]}'"
             )
-
-
-def reject_outliers(data: list[float], m: int = 2) -> list[float]:
-    mean_val = mean(data)
-    stdev_val = stdev(data)
-    return [x for x in data if abs(x - mean_val) < m * stdev_val]
 
 
 def check_and_load_config() -> Configs:
@@ -106,7 +96,7 @@ def check_and_load_config() -> Configs:
         configs = Configs(
             prompt=config_data["misc"]["prompt"],
             model=config_data["misc"]["model"],
-            rounds=clamp_num_rounds(config_data["misc"]["rounds"]),
+            rounds=core.clamp_num_rounds(config_data["misc"]["rounds"]),
             servers=servers,
         )
     except KeyError as e:
@@ -142,7 +132,7 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
     summary = []
 
     for key, exec_times in grouped_data.items():
-        filtered_times = reject_outliers(exec_times)
+        filtered_times = core.reject_outliers(exec_times)
 
         if len(filtered_times) < 2:
             mean_val = mean(filtered_times)
