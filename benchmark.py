@@ -5,7 +5,7 @@ import logging
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from statistics import mean, stdev
+from statistics import mean, stdev, median
 from time import time
 from ollama import Client
 from tabulate import tabulate
@@ -33,6 +33,7 @@ class Summary:
     model: str
     mean: float
     stdev: float
+    median: float
     sample_size: int
 
 
@@ -109,6 +110,7 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
     for key, exec_times in grouped_data.items():
         mean_val = mean(exec_times)
         stdev_val = stdev(exec_times)
+        median_val = median(exec_times)
 
         summary.append(
             Summary(
@@ -117,6 +119,7 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
                 model=key[1],
                 sample_size=len(exec_times),
                 stdev=round(stdev_val, 3),
+                median=round(median_val, 3),
             )
         )
 
@@ -127,7 +130,7 @@ def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
     print()
 
-    headers = ["Host", "Model", "Mean (s)", "SD (s)", "Sample size"]
+    headers = ["Host", "Model", "Mean (s)", "SD (s)", "Median (s)", "Sample size"]
     print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
