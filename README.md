@@ -4,10 +4,10 @@ platform/hardware permutations.
 
 ## Benchmarking LLM performance
 ### About
-This script runs a dummy prompt on several machines and several times. The
-execution times are gathered from which the means and standard deviations are
-calcaluted. Outlier execution times are rejected in order to account for Ollama
-models being reloaded after a period of inactivity.
+This script runs a dummy prompt against a specified LLM on several machines and
+several times. The execution times are gathered from which the means and
+standard deviations are calcaluted. I use this program mainly to fine tune
+my hardware configurations.
 
 ### Usage
 Copy the example TOML file:
