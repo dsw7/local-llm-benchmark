@@ -2,6 +2,6 @@
 .DEFAULT_GOAL = py
 
 py:
-	@black benchmark.py
-	@pylint --exit-zero benchmark.py
-	@mypy --strict benchmark.py
+	@black benchmark.py core/*.py
+	@pylint --exit-zero benchmark.py core/*.py
+	@mypy --strict benchmark.py core/*.py
