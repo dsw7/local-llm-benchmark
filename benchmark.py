@@ -31,6 +31,7 @@ class Summary:
     host: str
     mean: float
     model: str
+    sample_size: int
     stdev: float
 
 
@@ -113,6 +114,7 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
                 host=key[0],
                 mean=round(mean_val, 3),
                 model=key[1],
+                sample_size=len(exec_times),
                 stdev=round(stdev_val, 3),
             )
         )
@@ -122,10 +124,12 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
 
 def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
-    print(f"{'Host':<20}{'Model':<30}{'Mean (s)':<20}{'SD (s)':<20}")
+    print(f"{'Host':<20}{'Model':<30}{'Mean (s)':<20}{'SD (s)':<20}{'Sample size':<20}")
 
     for item in summary:
-        print(f"{item.host:<20}{item.model:<30}{item.mean:<20}{item.stdev:<20}")
+        print(
+            f"{item.host:<20}{item.model:<30}{item.mean:<20}{item.stdev:<20}{item.sample_size:<20}"
+        )
 
 
 def main() -> None:
