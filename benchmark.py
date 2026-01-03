@@ -128,9 +128,9 @@ def process_stats(stats: list[Stats]) -> list[Summary]:
 
 def print_summary(summary: list[Summary]) -> None:
     logger.info("-" * 100)
-    print()
+    print("\nAll values are provided in seconds")
 
-    headers = ["Host", "Model", "Mean (s)", "SD (s)", "Median (s)", "Sample size"]
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Sample size"]
     print(tabulate(summary, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
