@@ -5,6 +5,7 @@ Miscellenous utilities for benchmarking locally hosted LLMs (i.e. via
 I use this program to benchmark my infrastructure for the following cases:
 - When running [FuncGraft](https://github.com/dsw7/FuncGraft) in [local
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
+- When running [GPTifier](https://github.com/dsw7/GPTifier) commands via the Ollama stream
 
 ## Benchmarking LLM performance
 ### About
