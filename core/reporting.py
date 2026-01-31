@@ -1,8 +1,9 @@
 from logging import getLogger
 from pathlib import Path
 from matplotlib import pyplot as plt
-from scipy.stats import norm
 from numpy import linspace
+from scipy.stats import norm
+from tabulate import tabulate
 from .models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
@@ -52,7 +53,7 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
     return path_to_plot
 
 
-def generate_report(list_stats: list[ExecTimeStats]) -> None:
+def generate_plots(list_stats: list[ExecTimeStats]) -> None:
     if not _PLOT_DIRECTORY.exists():
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
@@ -61,3 +62,27 @@ def generate_report(list_stats: list[ExecTimeStats]) -> None:
 
     for stats in list_stats:
         plots.append(_plot_normal_distribution(stats))
+
+
+def print_summary(stats: list[ExecTimeStats]) -> None:
+    Logger.info("-" * 100)
+    print("\n* All values are provided in seconds")
+
+    # transpose data to match the headers list
+    stats_transposed = [
+        [
+            s.host,
+            s.model,
+            s.mean,
+            s.stdev,
+            s.median,
+            s.min_val,
+            s.max_val,
+            s.sample_size,
+        ]
+        for s in stats
+    ]
+
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
+    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
+    Logger.info("-" * 100)

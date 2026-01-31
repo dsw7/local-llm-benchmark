@@ -5,6 +5,7 @@ from colorama import Back, Style
 from requests import get, exceptions
 from .models import Configs, ExecTimeStats
 from .utils import BenchmarkError, get_client
+from .reporting import print_summary, generate_plots
 
 Logger = getLogger("benchmark")
 
@@ -97,3 +98,6 @@ def run_benchmarks(configs: Configs) -> None:
         )
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
+
+    print_summary(stats)
+    generate_plots(stats)
