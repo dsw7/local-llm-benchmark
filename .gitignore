@@ -49,3 +49,6 @@ dmypy.json
 
 # Project config
 configs.toml
+
+# Misc. project output files
+plots

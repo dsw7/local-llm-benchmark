@@ -1,3 +1,4 @@
+import pathlib
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 from numpy import linspace
@@ -6,6 +7,7 @@ from .models import ExecTimeStats
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
+_PLOT_DIRECTORY = pathlib.Path("plots")
 
 plt.rcParams.update(
     {
@@ -16,7 +18,7 @@ plt.rcParams.update(
 )
 
 
-def _plot_normal_distribution(stats: ExecTimeStats) -> str:
+def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
     data = []
     mu = stats.mean
     sigma = stats.stdev
@@ -37,11 +39,18 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> str:
     ax.spines["right"].set_visible(False)
 
     plt.tight_layout()
-    filename = f"results_{stats.host}.png"
-    plt.savefig(filename)
-    return filename
+
+    path_to_plot = _PLOT_DIRECTORY / f"results_{stats.host}.png"
+    plt.savefig(path_to_plot)
+
+    return path_to_plot
 
 
-def generate_report(stats: list[ExecTimeStats]) -> None:
-    for s in stats:
-        _plot_normal_distribution(s)
+def generate_report(list_stats: list[ExecTimeStats]) -> None:
+    if not _PLOT_DIRECTORY.exists():
+        _PLOT_DIRECTORY.mkdir()
+
+    plots: list[pathlib.Path] = []
+
+    for stats in list_stats:
+        plots.append(_plot_normal_distribution(stats))
