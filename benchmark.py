@@ -8,7 +8,7 @@ from colorama import Back, Style
 from tabulate import tabulate
 import requests
 import core
-from core import ExecTimes, ExecTimeStats
+from core.models import ExecTimes, ExecTimeStats
 from core.utils import get_client
 
 logging.basicConfig(
