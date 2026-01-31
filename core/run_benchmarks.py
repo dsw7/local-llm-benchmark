@@ -49,20 +49,18 @@ def _run_and_time_query(host: str, prompt: str, model: str) -> float:
     return time() - time_start
 
 
-def _run_and_time_queries(
-    servers: list[str], num_rounds: int, prompt: str, model: str
-) -> list[ExecTimeStats]:
+def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
     results = []
 
-    for server in servers:
+    for server in configs.servers:
         exec_times = []
 
-        for run in range(1, num_rounds + 1):
+        for run in range(1, configs.rounds + 1):
             Logger.info("-" * 100)
             Logger.info(
-                Back.GREEN + f"Run {run} | {server} | {model}" + Style.RESET_ALL
+                Back.GREEN + f"Run {run} | {server} | {configs.model}" + Style.RESET_ALL
             )
-            exec_time = _run_and_time_query(server, prompt, model)
+            exec_time = _run_and_time_query(server, configs.prompt, configs.model)
             Logger.info(f"Execution time: {exec_time:.3f}s")
             exec_times.append(exec_time)
 
@@ -74,7 +72,7 @@ def _run_and_time_queries(
                 mean=round(mean(exec_times), 5),
                 median=round(median(exec_times), 5),
                 min_val=min(exec_times),
-                model=model,
+                model=configs.model,
                 sample_size=len(exec_times),
                 stdev=round(stdev(exec_times), 5),
             )
@@ -93,9 +91,7 @@ def run_benchmarks(configs: Configs) -> None:
     _preload_models(configs.servers, configs.model)
 
     try:
-        stats: list[ExecTimeStats] = _run_and_time_queries(
-            configs.servers, configs.rounds, configs.prompt, configs.model
-        )
+        stats: list[ExecTimeStats] = _run_and_time_queries(configs)
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
