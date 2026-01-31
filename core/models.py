@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 
 
@@ -22,4 +22,10 @@ class ExecTimeStats:
     sample_size: int
     stdev: float
 
-    path_plot: Path | None = None
+    path_to_plot: str | None = None
+
+    def set_path_to_plot(self, path_to_plot: Path) -> None:
+        self.path_to_plot = str(path_to_plot)
+
+    def to_dict(self) -> dict:
+        return asdict(self)

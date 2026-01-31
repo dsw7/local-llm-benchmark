@@ -83,9 +83,8 @@ def _generate_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
         _PLOT_DIRECTORY.mkdir()
 
     for s in stats:
-        s.path_plot = _plot_normal_distribution(s)
-
-        print(s)
+        path_to_plot = _plot_normal_distribution(s)
+        s.set_path_to_plot(path_to_plot)
 
 
 def export_data(stats: list[ExecTimeStats]) -> None:
