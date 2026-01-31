@@ -5,7 +5,6 @@ import sys
 from statistics import mean, stdev, median
 from time import time
 from colorama import Back, Style
-import requests
 import core
 from core.models import ExecTimeStats
 from core.reporting import generate_report
@@ -18,11 +17,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 Logger = logging.getLogger("benchmark")
-
-
-def check_servers_up(servers: list[str]) -> None:
-    for server in servers:
-        requests.get(f"http://{server}", timeout=5)
 
 
 def check_models_exist(servers: list[str], model: str) -> None:
@@ -100,8 +94,8 @@ def main() -> None:
         sys.exit(str(e))
 
     try:
-        check_servers_up(configs.servers)
-    except requests.exceptions.ConnectionError as e:
+        core.run_benchmarks(configs)
+    except RuntimeError as e:
         sys.exit(str(e))
 
     try:

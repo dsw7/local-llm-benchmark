@@ -1,20 +1,12 @@
-from dataclasses import dataclass
 from os import path
+from tomllib import load, TOMLDecodeError
 from typing import Any
-import tomllib
+from .models import Configs
 
 
 def _clamp_num_rounds(rounds: int) -> int:
     # minimum of 2 rounds needed to calculate standard deviation
     return max(2, min(rounds, 10))
-
-
-@dataclass
-class Configs:
-    prompt: str
-    model: str
-    rounds: int
-    servers: list[str]
 
 
 class ConfigError(Exception):
@@ -34,8 +26,8 @@ def check_and_load_config() -> Configs:
 
     with open(config_file, "rb") as f:
         try:
-            config_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError as e:
+            config_data = load(f)
+        except TOMLDecodeError as e:
             raise ConfigError("Configurations can't be decoded", e) from e
 
     servers = [f'{s["host"]}:{s["port"]}' for s in config_data["servers"]]

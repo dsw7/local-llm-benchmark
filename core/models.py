@@ -2,6 +2,14 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Configs:
+    prompt: str
+    model: str
+    rounds: int
+    servers: list[str]
+
+
+@dataclass
 class ExecTimeStats:
     exec_times: list[float]
     host: str
