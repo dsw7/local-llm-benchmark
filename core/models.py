@@ -1,6 +1,6 @@
 from statistics import mean, stdev, median
 from dataclasses import dataclass, asdict
-from typing import Any
+from json import dump
 
 
 @dataclass
@@ -52,5 +52,18 @@ class ExecTimeStats:
     def get_plot_filename(self) -> str:
         return f"results_{self.host.replace(':', '_')}.pdf"
 
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+    def get_json_filename(self) -> str:
+        return f"results_{self.host.replace(':', '_')}.json"
+
+
+def dump_stats_to_json(stats: list[ExecTimeStats]) -> list[str]:
+    paths = []
+
+    for s in stats:
+        file_path = s.get_json_filename()
+        paths.append(file_path)
+
+        with open(file_path, "w") as file:
+            dump(asdict(s), file, indent=4)
+
+    return paths
