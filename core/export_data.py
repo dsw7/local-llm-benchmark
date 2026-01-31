@@ -22,6 +22,30 @@ plt.rcParams.update(
 )
 
 
+def _print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
+    Logger.info("-" * 100)
+    print("\n* All values are provided in seconds")
+
+    # transpose data to match the headers list
+    stats_transposed = [
+        [
+            s.host,
+            s.model,
+            s.mean,
+            s.stdev,
+            s.median,
+            s.min_val,
+            s.max_val,
+            s.sample_size,
+        ]
+        for s in stats
+    ]
+
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
+    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
+    Logger.info("-" * 100)
+
+
 def _get_plot_filename(host_str: str) -> Path:
     host_sub = host_str.replace(":", "_")
     return _PLOT_DIRECTORY / f"results_{host_sub}.pdf"
@@ -58,34 +82,10 @@ def _generate_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
 
-    plots: list[Path] = []
-
     for s in stats:
-        plots.append(_plot_normal_distribution(s))
+        s.path_plot = _plot_normal_distribution(s)
 
-
-def _print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
-    Logger.info("-" * 100)
-    print("\n* All values are provided in seconds")
-
-    # transpose data to match the headers list
-    stats_transposed = [
-        [
-            s.host,
-            s.model,
-            s.mean,
-            s.stdev,
-            s.median,
-            s.min_val,
-            s.max_val,
-            s.sample_size,
-        ]
-        for s in stats
-    ]
-
-    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
-    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
-    Logger.info("-" * 100)
+        print(s)
 
 
 def export_data(stats: list[ExecTimeStats]) -> None:

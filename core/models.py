@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -20,3 +21,5 @@ class ExecTimeStats:
     model: str
     sample_size: int
     stdev: float
+
+    path_plot: Path | None = None
