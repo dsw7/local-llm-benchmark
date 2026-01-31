@@ -3,6 +3,7 @@ from functools import cache
 from time import time
 from colorama import Back, Style
 from requests import get, exceptions
+from tabulate import tabulate
 from ollama import Client
 from .models import Configs, ExecTimeStats
 from .exceptions import BenchmarkError
@@ -82,7 +83,31 @@ def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
     return results
 
 
-def run_benchmarks(configs: Configs) -> list[ExecTimeStats]:
+def _print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
+    stats_transposed = [
+        [
+            s.host,
+            s.model,
+            s.get_mean_exec_time(ndigits=5),
+            s.get_stdev_exec_time(ndigits=5),
+            s.get_median_exec_time(ndigits=5),
+            s.get_min_exec_time(),
+            s.get_max_exec_time(),
+            s.sample_size,
+        ]
+        for s in stats
+    ]
+
+    Logger.info("-" * 100)
+    print("\n* All values are provided in seconds")
+
+    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
+    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
+
+    Logger.info("-" * 100)
+
+
+def run_benchmarks(configs: Configs) -> None:
     try:
         _check_servers_up(configs.servers)
     except exceptions.ConnectionError as e:
@@ -96,4 +121,4 @@ def run_benchmarks(configs: Configs) -> list[ExecTimeStats]:
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
-    return stats
+    _print_summary_to_stdout(stats)
