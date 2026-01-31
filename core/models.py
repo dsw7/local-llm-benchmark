@@ -1,4 +1,4 @@
-from statistics import mean, stdev
+from statistics import mean, stdev, median
 from dataclasses import dataclass, asdict
 from typing import Any
 
@@ -16,7 +16,6 @@ class ExecTimeStats:
     exec_times: list[float]
     host: str
     max_val: float
-    median: float
     min_val: float
     model: str
     sample_size: int
@@ -36,6 +35,14 @@ class ExecTimeStats:
             return stdev_val
 
         return round(stdev_val, ndigits)
+
+    def get_median_exec_time(self, ndigits: int | None = None) -> float:
+        median_val = median(self.exec_times)
+
+        if ndigits is None:
+            return median_val
+
+        return round(median_val, ndigits)
 
     def get_plot_filename(self) -> str:
         return f"results_{self.host.replace(':', '_')}.pdf"
