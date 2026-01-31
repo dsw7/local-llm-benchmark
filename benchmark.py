@@ -5,11 +5,11 @@ import sys
 from statistics import mean, stdev, median
 from time import time
 from colorama import Back, Style
-from tabulate import tabulate
 import requests
 import core
 from core.models import ExecTimeStats
 from core.reporting import generate_report
+from core.summary import print_summary
 from core.utils import get_client
 
 logging.basicConfig(
@@ -91,14 +91,6 @@ def run_and_time_queries(
         )
 
     return results
-
-
-def print_summary(stats: list[ExecTimeStats]) -> None:
-    Logger.info("-" * 100)
-    print("\n* All values are provided in seconds")
-
-    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
-    print(tabulate(stats, headers=headers, tablefmt="simple_outline"))  # type: ignore
 
 
 def main() -> None:
