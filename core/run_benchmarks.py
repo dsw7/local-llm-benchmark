@@ -7,7 +7,6 @@ from requests import get, exceptions
 from ollama import Client
 from .models import Configs, ExecTimeStats
 from .exceptions import BenchmarkError
-from .export_data import export_data
 
 Logger = getLogger("benchmark")
 
@@ -102,5 +101,4 @@ def run_benchmarks(configs: Configs) -> list[ExecTimeStats]:
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
-    export_data(stats)
     return stats

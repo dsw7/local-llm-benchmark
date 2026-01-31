@@ -21,12 +21,7 @@ plt.rcParams.update(
 )
 
 
-def _get_plot_filename(host_str: str) -> Path:
-    host_sub = host_str.replace(":", "_")
-    return _PLOT_DIRECTORY / f"results_{host_sub}.pdf"
-
-
-def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
+def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     mu = stats.mean
     sigma = stats.stdev
 
@@ -44,23 +39,17 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    path_to_plot = _get_plot_filename(stats.host)
+    path_to_plot = _PLOT_DIRECTORY / stats.get_plot_filename()
     Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
 
     plt.tight_layout()
     plt.savefig(path_to_plot)
-    return path_to_plot
 
 
-def _generate_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
+def export_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
     if not _PLOT_DIRECTORY.exists():
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
 
     for s in stats:
-        path_to_plot = _plot_normal_distribution(s)
-        s.set_path_to_plot(path_to_plot)
-
-
-def export_data(stats: list[ExecTimeStats]) -> None:
-    _generate_normal_distribution_plots(stats)
+        _plot_normal_distribution(s)
