@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-import functools
 import logging
 import sys
 from statistics import mean, stdev, median
 from time import time
 from colorama import Back, Style
-from ollama import Client
 from tabulate import tabulate
 import requests
 import core
 from core import ExecTimes, ExecTimeStats
+from core.utils import get_client
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,11 +17,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-
-@functools.cache
-def get_client(host: str) -> Client:
-    return Client(host)
 
 
 def check_servers_up(servers: list[str]) -> None:
