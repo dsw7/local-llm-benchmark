@@ -1,13 +1,20 @@
 from logging import getLogger
 from statistics import mean, stdev, median
+from functools import cache
 from time import time
 from colorama import Back, Style
 from requests import get, exceptions
+from ollama import Client
 from .models import Configs, ExecTimeStats
-from .utils import BenchmarkError, get_client
+from .utils import BenchmarkError
 from .reporting import print_summary, generate_plots
 
 Logger = getLogger("benchmark")
+
+
+@cache
+def _get_client(host: str) -> Client:
+    return Client(host)
 
 
 def _check_servers_up(servers: list[str]) -> None:
@@ -17,7 +24,7 @@ def _check_servers_up(servers: list[str]) -> None:
 
 def _check_models_exist(servers: list[str], model: str) -> None:
     for server in servers:
-        client = get_client(server)
+        client = _get_client(server)
         response = client.list()
 
         for list_model in response.models:
@@ -31,14 +38,14 @@ def _check_models_exist(servers: list[str], model: str) -> None:
 
 def _preload_models(servers: list[str], model: str) -> None:
     for server in servers:
-        client = get_client(server)
+        client = _get_client(server)
         Logger.info("Preloading %s on server %s", model, server)
 
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
 
 def _run_and_time_query(host: str, prompt: str, model: str) -> float:
-    client = get_client(host)
+    client = _get_client(host)
 
     time_start = time()
     stream = client.generate(model=model, prompt=prompt, stream=True)

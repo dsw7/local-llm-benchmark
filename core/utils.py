@@ -1,6 +1,4 @@
-import functools
 from typing import Any
-from ollama import Client
 
 
 class BenchmarkError(Exception):
@@ -10,8 +8,3 @@ class BenchmarkError(Exception):
 
     def __str__(self) -> str:
         return f"BenchmarkError: {self.message}"
-
-
-@functools.cache
-def get_client(host: str) -> Client:
-    return Client(host)
