@@ -17,7 +17,7 @@ logging.basicConfig(
     format="%(levelname)s %(asctime)s %(message)s",
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
-logger = logging.getLogger(__name__)
+Logger = logging.getLogger("benchmark")
 
 
 def check_servers_up(servers: list[str]) -> None:
@@ -42,7 +42,7 @@ def check_models_exist(servers: list[str], model: str) -> None:
 def preload_models(servers: list[str], model: str) -> None:
     for server in servers:
         client = get_client(server)
-        logger.info("Preloading %s on server %s", model, server)
+        Logger.info("Preloading %s on server %s", model, server)
 
         client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
 
@@ -68,12 +68,12 @@ def run_and_time_queries(
         exec_times = []
 
         for run in range(1, num_rounds + 1):
-            logger.info("-" * 100)
-            logger.info(
+            Logger.info("-" * 100)
+            Logger.info(
                 Back.GREEN + f"Run {run} | {server} | {model}" + Style.RESET_ALL
             )
             exec_time = run_and_time_query(server, prompt, model)
-            logger.info(f"Execution time: {exec_time:.3f}s")
+            Logger.info(f"Execution time: {exec_time:.3f}s")
             exec_times.append(exec_time)
 
         results.append(ExecTimes(exec_times=exec_times, host=server, model=model))
@@ -106,7 +106,7 @@ def get_stats_from_exec_times(results: list[ExecTimes]) -> list[ExecTimeStats]:
 
 
 def print_summary(stats: list[ExecTimeStats]) -> None:
-    logger.info("-" * 100)
+    Logger.info("-" * 100)
     print("\n* All values are provided in seconds")
 
     headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]

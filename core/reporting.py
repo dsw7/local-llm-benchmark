@@ -1,3 +1,4 @@
+import logging
 import pathlib
 import matplotlib.pyplot as plt
 from scipy.stats import norm
@@ -8,6 +9,8 @@ _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
 _PLOT_DIRECTORY = pathlib.Path("plots")
+
+Logger = logging.getLogger("benchmark")
 
 plt.rcParams.update(
     {
@@ -41,13 +44,15 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
     plt.tight_layout()
 
     path_to_plot = _PLOT_DIRECTORY / f"results_{stats.host}.png"
-    plt.savefig(path_to_plot)
+    Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
 
+    plt.savefig(path_to_plot)
     return path_to_plot
 
 
 def generate_report(list_stats: list[ExecTimeStats]) -> None:
     if not _PLOT_DIRECTORY.exists():
+        Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
 
     plots: list[pathlib.Path] = []
