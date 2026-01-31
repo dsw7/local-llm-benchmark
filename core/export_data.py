@@ -53,18 +53,18 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
     return path_to_plot
 
 
-def generate_plots(list_stats: list[ExecTimeStats]) -> None:
+def _generate_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
     if not _PLOT_DIRECTORY.exists():
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
 
     plots: list[Path] = []
 
-    for stats in list_stats:
-        plots.append(_plot_normal_distribution(stats))
+    for s in stats:
+        plots.append(_plot_normal_distribution(s))
 
 
-def print_summary(stats: list[ExecTimeStats]) -> None:
+def _print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
     Logger.info("-" * 100)
     print("\n* All values are provided in seconds")
 
@@ -86,3 +86,8 @@ def print_summary(stats: list[ExecTimeStats]) -> None:
     headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
     print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
     Logger.info("-" * 100)
+
+
+def export_data(stats: list[ExecTimeStats]) -> None:
+    _print_summary_to_stdout(stats)
+    _generate_normal_distribution_plots(stats)
