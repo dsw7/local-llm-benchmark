@@ -5,8 +5,9 @@ from colorama import Back, Style
 from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
-from .models import Configs, ExecTimeStats, dump_stats_to_json
+from .dataclass_json_io import dump_stats_models_to_json
 from .exceptions import BenchmarkError
+from .models import Configs, ExecTimeStats
 
 Logger = getLogger("benchmark")
 
@@ -122,8 +123,4 @@ def run_benchmarks(configs: Configs) -> None:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
     _print_summary_to_stdout(stats)
-
-    json_files = dump_stats_to_json(stats)
-
-    for file in json_files:
-        Logger.info("Exported JSON file: %s", file)
+    dump_stats_models_to_json(stats=stats, prompt=configs.prompt)
