@@ -1,13 +1,29 @@
-import logging
+from logging import getLogger
 from tabulate import tabulate
 from .models import ExecTimeStats
 
-Logger = logging.getLogger("benchmark")
+Logger = getLogger("benchmark")
 
 
 def print_summary(stats: list[ExecTimeStats]) -> None:
     Logger.info("-" * 100)
     print("\n* All values are provided in seconds")
 
+    # transpose data to match the headers list
+    stats_transposed = [
+        [
+            s.host,
+            s.model,
+            s.mean,
+            s.stdev,
+            s.median,
+            s.min_val,
+            s.max_val,
+            s.sample_size,
+        ]
+        for s in stats
+    ]
+
     headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
-    print(tabulate(stats, headers=headers, tablefmt="simple_outline"))  # type: ignore
+    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
+    Logger.info("-" * 100)
