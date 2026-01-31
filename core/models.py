@@ -1,5 +1,6 @@
 from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -27,5 +28,5 @@ class ExecTimeStats:
     def set_path_to_plot(self, path_to_plot: Path) -> None:
         self.path_to_plot = str(path_to_plot)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
