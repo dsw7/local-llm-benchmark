@@ -14,7 +14,7 @@ def print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
         [
             s.host,
             s.model,
-            s.mean,
+            s.get_mean_exec_time(ndigits=5),
             s.stdev,
             s.median,
             s.min_val,
