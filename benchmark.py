@@ -8,7 +8,7 @@ from colorama import Back, Style
 from tabulate import tabulate
 import requests
 import core
-from core.models import ExecTimes, ExecTimeStats
+from core.models import ExecTimeStats
 from core.reporting import generate_report
 from core.utils import get_client
 
@@ -61,7 +61,7 @@ def run_and_time_query(host: str, prompt: str, model: str) -> float:
 
 def run_and_time_queries(
     servers: list[str], num_rounds: int, prompt: str, model: str
-) -> list[ExecTimes]:
+) -> list[ExecTimeStats]:
     results = []
 
     for server in servers:
@@ -76,33 +76,21 @@ def run_and_time_queries(
             Logger.info(f"Execution time: {exec_time:.3f}s")
             exec_times.append(exec_time)
 
-        results.append(ExecTimes(exec_times=exec_times, host=server, model=model))
-
-    return results
-
-
-def get_stats_from_exec_times(results: list[ExecTimes]) -> list[ExecTimeStats]:
-    stats = []
-
-    for item in results:
-        mean_val = round(mean(item.exec_times), 5)
-        stdev_val = round(stdev(item.exec_times), 5)
-        median_val = round(median(item.exec_times), 5)
-
-        stats.append(
+        results.append(
             ExecTimeStats(
-                host=item.host,
-                max_val=max(item.exec_times),
-                mean=mean_val,
-                median=median_val,
-                min_val=min(item.exec_times),
-                model=item.model,
-                sample_size=len(item.exec_times),
-                stdev=stdev_val,
+                exec_times=exec_times,
+                host=server,
+                max_val=max(exec_times),
+                mean=round(mean(exec_times), 5),
+                median=round(median(exec_times), 5),
+                min_val=min(exec_times),
+                model=model,
+                sample_size=len(exec_times),
+                stdev=round(stdev(exec_times), 5),
             )
         )
 
-    return stats
+    return results
 
 
 def print_summary(stats: list[ExecTimeStats]) -> None:
@@ -132,13 +120,12 @@ def main() -> None:
     preload_models(configs.servers, configs.model)
 
     try:
-        exec_times: list[ExecTimes] = run_and_time_queries(
+        stats: list[ExecTimeStats] = run_and_time_queries(
             configs.servers, configs.rounds, configs.prompt, configs.model
         )
     except KeyboardInterrupt:
         sys.exit("\nBenchmarking was manually aborted!")
 
-    stats: list[ExecTimeStats] = get_stats_from_exec_times(exec_times)
     print_summary(stats)
     generate_report(stats)
 

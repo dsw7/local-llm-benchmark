@@ -2,19 +2,13 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ExecTimes:
+class ExecTimeStats:
     exec_times: list[float]
     host: str
-    model: str
-
-
-@dataclass
-class ExecTimeStats:
-    host: str
-    model: str
+    max_val: float
     mean: float
-    stdev: float
     median: float
     min_val: float
-    max_val: float
+    model: str
     sample_size: int
+    stdev: float
