@@ -15,8 +15,6 @@ class Configs:
 class ExecTimeStats:
     exec_times: list[float]
     host: str
-    max_val: float
-    min_val: float
     model: str
     sample_size: int
 
@@ -43,6 +41,12 @@ class ExecTimeStats:
             return median_val
 
         return round(median_val, ndigits)
+
+    def get_min_exec_time(self) -> float:
+        return min(self.exec_times)
+
+    def get_max_exec_time(self) -> float:
+        return max(self.exec_times)
 
     def get_plot_filename(self) -> str:
         return f"results_{self.host.replace(':', '_')}.pdf"

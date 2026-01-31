@@ -17,8 +17,8 @@ def print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
             s.get_mean_exec_time(ndigits=5),
             s.get_stdev_exec_time(ndigits=5),
             s.get_median_exec_time(ndigits=5),
-            s.min_val,
-            s.max_val,
+            s.get_min_exec_time(),
+            s.get_max_exec_time(),
             s.sample_size,
         ]
         for s in stats
