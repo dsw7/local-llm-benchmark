@@ -15,7 +15,6 @@ class ExecTimeStats:
     exec_times: list[float]
     host: str
     model: str
-    prompt: str
     sample_size: int
 
     def get_mean_exec_time(self, ndigits: int | None = None) -> float:
@@ -50,6 +49,3 @@ class ExecTimeStats:
 
     def get_plot_filename(self) -> str:
         return f"results_{self.host.replace(':', '_')}.pdf"
-
-    def get_json_filename(self) -> str:
-        return f"results_{self.host.replace(':', '_')}.json"

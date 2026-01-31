@@ -76,7 +76,6 @@ def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
                 exec_times=exec_times,
                 host=server,
                 model=configs.model,
-                prompt=configs.prompt,
                 sample_size=len(exec_times),
             )
         )
