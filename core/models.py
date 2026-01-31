@@ -1,4 +1,4 @@
-from statistics import mean
+from statistics import mean, stdev
 from dataclasses import dataclass, asdict
 from typing import Any
 
@@ -20,7 +20,6 @@ class ExecTimeStats:
     min_val: float
     model: str
     sample_size: int
-    stdev: float
 
     def get_mean_exec_time(self, ndigits: int | None = None) -> float:
         mean_val = mean(self.exec_times)
@@ -29,6 +28,14 @@ class ExecTimeStats:
             return mean_val
 
         return round(mean_val, ndigits)
+
+    def get_stdev_exec_time(self, ndigits: int | None = None) -> float:
+        stdev_val = stdev(self.exec_times)
+
+        if ndigits is None:
+            return stdev_val
+
+        return round(stdev_val, ndigits)
 
     def get_plot_filename(self) -> str:
         return f"results_{self.host.replace(':', '_')}.pdf"

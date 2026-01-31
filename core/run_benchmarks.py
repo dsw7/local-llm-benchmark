@@ -1,5 +1,5 @@
 from logging import getLogger
-from statistics import stdev, median
+from statistics import median
 from functools import cache
 from time import time
 from colorama import Back, Style
@@ -79,7 +79,6 @@ def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
                 min_val=min(exec_times),
                 model=configs.model,
                 sample_size=len(exec_times),
-                stdev=round(stdev(exec_times), 5),
             )
         )
 

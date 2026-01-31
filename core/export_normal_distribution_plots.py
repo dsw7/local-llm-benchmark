@@ -23,7 +23,7 @@ plt.rcParams.update(
 
 def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     mu = stats.get_mean_exec_time()
-    sigma = stats.stdev
+    sigma = stats.get_stdev_exec_time()
 
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     f_x = norm.pdf(x, mu, sigma)
