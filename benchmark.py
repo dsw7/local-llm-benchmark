@@ -22,6 +22,8 @@ def main() -> None:
     except core.BenchmarkError as e:
         sys.exit(str(e))
 
+    core.export_normal_distribution_plots()
+
 
 if __name__ == "__main__":
     main()

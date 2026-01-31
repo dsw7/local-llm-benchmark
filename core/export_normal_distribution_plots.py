@@ -3,6 +3,7 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
+from .dataclass_json_io import load_stats_models_from_json
 from .models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
@@ -19,6 +20,10 @@ plt.rcParams.update(
         "font.monospace": ["Courier", "Courier New", "DejaVu Sans Mono"],
     }
 )
+
+
+def _get_plot_filename(host: str) -> Path:
+    return _PLOT_DIRECTORY / f"results_{host.replace(':', '_')}.pdf"
 
 
 def _plot_normal_distribution(stats: ExecTimeStats) -> None:
@@ -39,17 +44,19 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    path_to_plot = _PLOT_DIRECTORY / stats.get_plot_filename()
+    path_to_plot = _get_plot_filename(stats.host)
     Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
 
     plt.tight_layout()
     plt.savefig(path_to_plot)
 
 
-def export_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
+def export_normal_distribution_plots() -> None:
     if not _PLOT_DIRECTORY.exists():
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
+
+    stats, _ = load_stats_models_from_json()
 
     for s in stats:
         _plot_normal_distribution(s)

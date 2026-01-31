@@ -46,6 +46,3 @@ class ExecTimeStats:
 
     def get_max_exec_time(self) -> float:
         return max(self.exec_times)
-
-    def get_plot_filename(self) -> str:
-        return f"results_{self.host.replace(':', '_')}.pdf"
