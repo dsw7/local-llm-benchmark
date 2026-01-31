@@ -1,6 +1,6 @@
-import logging
-import pathlib
-import matplotlib.pyplot as plt
+from logging import getLogger
+from pathlib import Path
+from matplotlib import pyplot as plt
 from scipy.stats import norm
 from numpy import linspace
 from .models import ExecTimeStats
@@ -8,9 +8,9 @@ from .models import ExecTimeStats
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
-_PLOT_DIRECTORY = pathlib.Path("plots")
+_PLOT_DIRECTORY = Path("plots")
 
-Logger = logging.getLogger("benchmark")
+Logger = getLogger("benchmark")
 
 plt.rcParams.update(
     {
@@ -21,7 +21,12 @@ plt.rcParams.update(
 )
 
 
-def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
+def _get_plot_filename(host_str: str) -> Path:
+    host_sub = host_str.replace(":", "_")
+    return _PLOT_DIRECTORY / f"results_{host_sub}.pdf"
+
+
+def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
     mu = stats.mean
     sigma = stats.stdev
 
@@ -39,7 +44,7 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    path_to_plot = _PLOT_DIRECTORY / f"results_{stats.host}.png"
+    path_to_plot = _get_plot_filename(stats.host)
     Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
 
     plt.tight_layout()
@@ -52,7 +57,7 @@ def generate_report(list_stats: list[ExecTimeStats]) -> None:
         Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
         _PLOT_DIRECTORY.mkdir()
 
-    plots: list[pathlib.Path] = []
+    plots: list[Path] = []
 
     for stats in list_stats:
         plots.append(_plot_normal_distribution(stats))
