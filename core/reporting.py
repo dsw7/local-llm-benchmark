@@ -22,18 +22,16 @@ plt.rcParams.update(
 
 
 def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
-    data = []
     mu = stats.mean
     sigma = stats.stdev
 
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-    y = norm.pdf(x, mu, sigma)
-
-    y2 = norm.pdf(data, mu, sigma)
+    f_x = norm.pdf(x, mu, sigma)
+    f_exec_times = norm.pdf(stats.exec_times, mu, sigma)
 
     plt.figure(figsize=(_PLOT_WIDTH, _PLOT_HEIGHT))
-    plt.plot(x, y, alpha=0.5, c="k", lw=0.5)
-    plt.scatter(data, y2.tolist(), c="k", s=12, marker="x")
+    plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
+    plt.scatter(stats.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
     plt.xlabel("Time (s)")
 
     ax = plt.gca()
@@ -41,11 +39,10 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> pathlib.Path:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    plt.tight_layout()
-
     path_to_plot = _PLOT_DIRECTORY / f"results_{stats.host}.png"
     Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
 
+    plt.tight_layout()
     plt.savefig(path_to_plot)
     return path_to_plot
 
