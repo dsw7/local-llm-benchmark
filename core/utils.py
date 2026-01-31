@@ -1,5 +1,15 @@
 import functools
+from typing import Any
 from ollama import Client
+
+
+class BenchmarkError(Exception):
+    def __init__(self, message: str, *args: Any):
+        self.message = message
+        self.args = args
+
+    def __str__(self) -> str:
+        return f"BenchmarkError: {self.message}"
 
 
 @functools.cache

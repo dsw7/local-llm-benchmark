@@ -90,7 +90,7 @@ def run_and_time_queries(
 def main() -> None:
     try:
         configs = core.check_and_load_config()
-    except core.ConfigError as e:
+    except core.BenchmarkError as e:
         sys.exit(str(e))
 
     try:
