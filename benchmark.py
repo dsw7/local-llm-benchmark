@@ -3,7 +3,6 @@
 import functools
 import logging
 import sys
-from dataclasses import dataclass
 from statistics import mean, stdev, median
 from time import time
 from colorama import Back, Style
@@ -11,6 +10,7 @@ from ollama import Client
 from tabulate import tabulate
 import requests
 import core
+from core import ExecTimes, ExecTimeStats
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,25 +18,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ExecTimes:
-    exec_times: list[float]
-    host: str
-    model: str
-
-
-@dataclass
-class ExecTimeStats:
-    host: str
-    model: str
-    mean: float
-    stdev: float
-    median: float
-    min_val: float
-    max_val: float
-    sample_size: int
 
 
 @functools.cache
