@@ -9,6 +9,7 @@ from tabulate import tabulate
 import requests
 import core
 from core.models import ExecTimes, ExecTimeStats
+from core.reporting import generate_report
 from core.utils import get_client
 
 logging.basicConfig(
@@ -139,6 +140,7 @@ def main() -> None:
 
     stats: list[ExecTimeStats] = get_stats_from_exec_times(exec_times)
     print_summary(stats)
+    generate_report(stats)
 
 
 if __name__ == "__main__":
