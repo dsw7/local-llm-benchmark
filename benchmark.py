@@ -18,9 +18,11 @@ def main() -> None:
         sys.exit(str(e))
 
     try:
-        core.run_benchmarks(configs)
+        stats = core.run_benchmarks(configs)
     except core.BenchmarkError as e:
         sys.exit(str(e))
+
+    core.print_summary_to_stdout(stats)
 
 
 if __name__ == "__main__":

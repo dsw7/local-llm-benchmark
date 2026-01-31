@@ -3,7 +3,6 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
-from tabulate import tabulate
 from .models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
@@ -20,30 +19,6 @@ plt.rcParams.update(
         "font.monospace": ["Courier", "Courier New", "DejaVu Sans Mono"],
     }
 )
-
-
-def _print_summary_to_stdout(stats: list[ExecTimeStats]) -> None:
-    Logger.info("-" * 100)
-    print("\n* All values are provided in seconds")
-
-    # transpose data to match the headers list
-    stats_transposed = [
-        [
-            s.host,
-            s.model,
-            s.mean,
-            s.stdev,
-            s.median,
-            s.min_val,
-            s.max_val,
-            s.sample_size,
-        ]
-        for s in stats
-    ]
-
-    headers = ["Host", "Model", "Mean", "SD", "Median", "Min", "Max", "Sample size"]
-    print(tabulate(stats_transposed, headers=headers, tablefmt="simple_outline"))
-    Logger.info("-" * 100)
 
 
 def _get_plot_filename(host_str: str) -> Path:
@@ -88,5 +63,4 @@ def _generate_normal_distribution_plots(stats: list[ExecTimeStats]) -> None:
 
 
 def export_data(stats: list[ExecTimeStats]) -> None:
-    _print_summary_to_stdout(stats)
     _generate_normal_distribution_plots(stats)

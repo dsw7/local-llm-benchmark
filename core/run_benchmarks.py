@@ -88,7 +88,7 @@ def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
     return results
 
 
-def run_benchmarks(configs: Configs) -> None:
+def run_benchmarks(configs: Configs) -> list[ExecTimeStats]:
     try:
         _check_servers_up(configs.servers)
     except exceptions.ConnectionError as e:
@@ -103,3 +103,4 @@ def run_benchmarks(configs: Configs) -> None:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
     export_data(stats)
+    return stats
