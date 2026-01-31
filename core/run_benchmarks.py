@@ -6,7 +6,7 @@ from colorama import Back, Style
 from requests import get, exceptions
 from ollama import Client
 from .models import Configs, ExecTimeStats
-from .utils import BenchmarkError
+from .exceptions import BenchmarkError
 from .reporting import print_summary, generate_plots
 
 Logger = getLogger("benchmark")
