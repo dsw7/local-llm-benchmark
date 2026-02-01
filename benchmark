@@ -3,14 +3,26 @@
 echo "Please choose an option:"
 echo "[1] Run benchmarks"
 echo "[2] Generate normal distributions"
+echo "[3] Generate LaTeX report"
+echo
 
-read -rp "Enter 1 or 2: " user_input
+read -rp "Option: " user_input
+
+_generate_latex_report()
+{
+  local output_path=output/latex
+  mkdir -vp $output_path
+
+  pdflatex -output-directory=$output_path base.tex
+}
 
 if [ "$user_input" == "1" ]; then
     python3 commands/subcommand_run_benchmarks.py
 elif [ "$user_input" == "2" ]; then
     python3 commands/subcommand_plot_normal_distributions.py
+elif [ "$user_input" == "3" ]; then
+    _generate_latex_report
 else
-    echo "Invalid input. You must input 1 or 2. Exiting with error."
+    echo "Invalid input. Enter an option between 1 and 3. Exiting with error."
     exit 1
 fi
