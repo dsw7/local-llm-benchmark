@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import sys
 import core
@@ -11,18 +12,40 @@ logging.basicConfig(
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Benchmark locally hosted LLMs")
+
+    parser.add_argument(
+        "-p",
+        "--generate-plots",
+        action="store_true",
+        help="Generate normal distribution plots",
+    )
+
+    args = parser.parse_args()
+    return args
+
+
+def run_subprogram(args: argparse.Namespace, configs: core.models.Configs) -> None:
+    if args.generate_plots:
+        core.export_normal_distribution_plots()
+        return
+
+    core.run_benchmarks(configs)
+
+
 def main() -> None:
+    args = parse_args()
+
     try:
         configs = core.check_and_load_config()
-    except core.BenchmarkError as e:
+    except core.ConfigError as e:
         sys.exit(str(e))
 
     try:
-        core.run_benchmarks(configs)
+        run_subprogram(args, configs)
     except core.BenchmarkError as e:
         sys.exit(str(e))
-
-    core.export_normal_distribution_plots()
 
 
 if __name__ == "__main__":
