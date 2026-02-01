@@ -51,4 +51,4 @@ dmypy.json
 configs.toml
 
 # Misc. project output files
-plots
+output

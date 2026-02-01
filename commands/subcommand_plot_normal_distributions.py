@@ -1,14 +1,18 @@
 from logging import getLogger
 from pathlib import Path
+
 from matplotlib import pyplot as plt
-from scipy.stats import norm
 from numpy import linspace
-from .models import ExecTimeStats
+from scipy.stats import norm
+
+from core.consts import PlotsDirectory
+from core.dataclass_json_io import load_stats_models_from_json
+from core.exceptions import BenchmarkError
+from core.models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
-_PLOT_DIRECTORY = Path("plots")
 
 Logger = getLogger("benchmark")
 
@@ -21,14 +25,13 @@ plt.rcParams.update(
 )
 
 
-def _get_plot_filename(host_str: str) -> Path:
-    host_sub = host_str.replace(":", "_")
-    return _PLOT_DIRECTORY / f"results_{host_sub}.pdf"
+def _get_plot_filename(host: str) -> Path:
+    return PlotsDirectory / f"results_{host.replace(':', '_')}.pdf"
 
 
-def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
-    mu = stats.mean
-    sigma = stats.stdev
+def _plot_normal_distribution(stats: ExecTimeStats) -> None:
+    mu = stats.get_mean_exec_time()
+    sigma = stats.get_stdev_exec_time()
 
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     f_x = norm.pdf(x, mu, sigma)
@@ -49,15 +52,21 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> Path:
 
     plt.tight_layout()
     plt.savefig(path_to_plot)
-    return path_to_plot
 
 
-def generate_report(list_stats: list[ExecTimeStats]) -> None:
-    if not _PLOT_DIRECTORY.exists():
-        Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
-        _PLOT_DIRECTORY.mkdir()
+def _export_normal_distribution_plots() -> None:
+    stats, _ = load_stats_models_from_json()
 
-    plots: list[Path] = []
+    for s in stats:
+        _plot_normal_distribution(s)
 
-    for stats in list_stats:
-        plots.append(_plot_normal_distribution(stats))
+
+def main() -> None:
+    try:
+        _export_normal_distribution_plots()
+    except BenchmarkError as e:
+        raise SystemExit(e) from e
+
+
+if __name__ == "__main__":
+    main()

@@ -15,18 +15,22 @@ statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
 performance of my LLMs on prem.
 
-### Usage
+### Basic setup
 Copy the example TOML file:
 ```bash
 cp configs_example.toml configs.toml
 ```
 The `configs.toml` file is the "production" file and is excluded via
 `.gitignore`. Edit the file to match your specifications (i.e. set the dummy
-prompt and IP addresses). Then set up a virtual environment and run:
+prompt and IP addresses).
+
+### Running some benchmarks
+Set up a virtual environment and run the bash script:
 ```bash
-chmod +x benchmark.py && ./benchmark.py
+./benchmark
 ```
-When complete, the program will output something akin to:
+And input <kbd>1</kbd> when prompted. When complete, the program will output
+something akin to:
 ```
 All values are provided in seconds
 ┌──────────────────┬───────────────┬──────────┬─────────┬──────────┬──────────┬──────────┬───────────────┐
@@ -36,3 +40,13 @@ All values are provided in seconds
 │ 10.0.0.115:11434 │ gemma3:latest │ 18.0551  │ 0.62221 │ 17.9943  │ 17.3745  │ 19.0215  │             5 │
 └──────────────────┴───────────────┴──────────┴─────────┴──────────┴──────────┴──────────┴───────────────┘
 ```
+
+### Generating Gaussian distributions for inference times
+Set up a virtual environment and run the bash script:
+```bash
+./benchmark
+```
+And input <kbd>2</kbd> when prompted. When complete, the program will output a
+plot of a probability distribution for the set of measurements obtained for
+each machine.  These plots will be placed under the `output/plots` folder
+(which will automatically be generated when the program is first invoked).
