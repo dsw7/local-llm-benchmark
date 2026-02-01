@@ -1,35 +1,35 @@
 from subprocess import run, CalledProcessError
-from core.consts import OutputDirectory, PlotsDirectory
+from core.consts import OutputDirectory
 
 LaTeXDirectory = OutputDirectory / "latex"
 
 
-def _generate_preamble() -> str:
-    return r"""\documentclass[10pt]{article}
-
-\usepackage{courier}
-\usepackage{geometry}
-\usepackage{graphicx}
-\usepackage{titlesec}
-\usepackage{datetime}
-
-\geometry{margin=1in}
-\titleformat{\section}{\bfseries\large}{}{0em}{}[\titlerule]
-\renewcommand*\familydefault{\ttdefault}
-\graphicspath{{output/plots}}
+def _assemble_technical_details_section() -> str:
+    return r"""\section{Technical details}
+This report was acquired on \today\ at \currenttime.
 """
 
 
-def _generate_body() -> str:
-    return r"""
-\begin{document}
+def _assemble_full_text() -> str:
+    return rf"""\documentclass[10pt]{{article}}
+
+\usepackage{{courier}}
+\usepackage{{geometry}}
+\usepackage{{graphicx}}
+\usepackage{{titlesec}}
+\usepackage{{datetime}}
+
+\geometry{{margin=1in}}
+\titleformat{{\section}}{{\bfseries\large}}{{}}{{0em}}{{}}[\titlerule]
+\renewcommand*\familydefault{{\ttdefault}}
+
+\begin{{document}}
 \tableofcontents
 \newpage
 
-\section{Technical details}
-This report was acquired on \today\ at \currenttime.
+{_assemble_technical_details_section()}
 
-\end{document}
+\end{{document}}
 """
 
 
@@ -38,8 +38,7 @@ def main() -> None:
         LaTeXDirectory.mkdir()
 
     latex_file = LaTeXDirectory / "report.tex"
-    markup = _generate_preamble() + _generate_body()
-    latex_file.write_text(markup)
+    latex_file.write_text(_assemble_full_text())
 
     command = [
         "pdflatex",
