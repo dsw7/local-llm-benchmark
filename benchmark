@@ -13,7 +13,7 @@ _generate_latex_report()
   local output_path=output/latex
   mkdir -vp $output_path
 
-  pdflatex -output-directory=$output_path base.tex
+  pdflatex -interaction=nonstopmode -output-directory=$output_path base.tex
 }
 
 if [ "$user_input" == "1" ]; then
