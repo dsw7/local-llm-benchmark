@@ -53,8 +53,18 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     plt.savefig(path_to_plot)
 
 
-def export_normal_distribution_plots() -> None:
+def _export_normal_distribution_plots() -> None:
     stats, _ = load_stats_models_from_json()
 
     for s in stats:
         _plot_normal_distribution(s)
+
+def main() -> None:
+    try:
+        _export_normal_distribution_plots()
+    except BenchmarkError as e:
+        raise SystemExit from e
+
+
+if __name__ == "__main__":
+    main()
