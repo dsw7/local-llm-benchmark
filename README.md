@@ -29,7 +29,8 @@ Set up a virtual environment and run the bash script:
 ```bash
 ./benchmark
 ```
-And input <kbd>1</kbd>. When complete, the program will output something akin to:
+And input <kbd>1</kbd> when prompted. When complete, the program will output
+something akin to:
 ```
 All values are provided in seconds
 ┌──────────────────┬───────────────┬──────────┬─────────┬──────────┬──────────┬──────────┬───────────────┐
@@ -45,7 +46,7 @@ Set up a virtual environment and run the bash script:
 ```bash
 ./benchmark
 ```
-And input <kbd>2</kbd>. When complete, the program will output a plot of a
-probability distribution for the set of measurements obtained for each machine.
-These plots will be placed under the `output/plots` folder (which will
-automatically be generated when the program is first invoked).
+And input <kbd>2</kbd> when prompted. When complete, the program will output a
+plot of a probability distribution for the set of measurements obtained for
+each machine.  These plots will be placed under the `output/plots` folder
+(which will automatically be generated when the program is first invoked).
