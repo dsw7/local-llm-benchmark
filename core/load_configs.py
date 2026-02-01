@@ -1,7 +1,8 @@
 from os import path
 from tomllib import load, TOMLDecodeError
-from .models import Configs
+
 from .exceptions import ConfigError
+from .models import Configs
 
 
 def _clamp_num_rounds(rounds: int) -> int:

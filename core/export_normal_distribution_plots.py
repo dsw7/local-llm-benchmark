@@ -1,15 +1,17 @@
 from logging import getLogger
 from pathlib import Path
+
 from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
+
+from .consts import PlotsDirectory
 from .dataclass_json_io import load_stats_models_from_json
 from .models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
-_PLOT_DIRECTORY = Path("plots")
 
 Logger = getLogger("benchmark")
 
@@ -23,7 +25,7 @@ plt.rcParams.update(
 
 
 def _get_plot_filename(host: str) -> Path:
-    return _PLOT_DIRECTORY / f"results_{host.replace(':', '_')}.pdf"
+    return PlotsDirectory / f"results_{host.replace(':', '_')}.pdf"
 
 
 def _plot_normal_distribution(stats: ExecTimeStats) -> None:
@@ -52,10 +54,6 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
 
 
 def export_normal_distribution_plots() -> None:
-    if not _PLOT_DIRECTORY.exists():
-        Logger.info("Creating new directory: %s", _PLOT_DIRECTORY)
-        _PLOT_DIRECTORY.mkdir()
-
     stats, _ = load_stats_models_from_json()
 
     for s in stats:

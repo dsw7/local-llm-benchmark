@@ -1,10 +1,11 @@
-from pathlib import Path
 from dataclasses import asdict
 from json import dumps, loads
+
 from .exceptions import BenchmarkError
 from .models import ExecTimeStats
+from .consts import OutputDirectory
 
-OutputFile = Path("stats.json")
+OutputFile = OutputDirectory / "stats.json"
 
 
 def dump_stats_models_to_json(stats: list[ExecTimeStats], prompt: str) -> None:

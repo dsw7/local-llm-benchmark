@@ -1,10 +1,12 @@
 from logging import getLogger
 from functools import cache
 from time import time
+
 from colorama import Back, Style
 from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
+
 from .dataclass_json_io import dump_stats_models_to_json
 from .exceptions import BenchmarkError
 from .models import Configs, ExecTimeStats
