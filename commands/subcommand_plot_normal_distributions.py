@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
 
-from .consts import PlotsDirectory
-from .dataclass_json_io import load_stats_models_from_json
-from .models import ExecTimeStats
+from core.consts import PlotsDirectory
+from core.dataclass_json_io import load_stats_models_from_json
+from core.exceptions import BenchmarkError
+from core.models import ExecTimeStats
 
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
@@ -64,7 +65,7 @@ def main() -> None:
     try:
         _export_normal_distribution_plots()
     except BenchmarkError as e:
-        raise SystemExit from e
+        raise SystemExit(e) from e
 
 
 if __name__ == "__main__":

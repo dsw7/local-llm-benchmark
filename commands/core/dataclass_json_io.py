@@ -1,9 +1,9 @@
 from dataclasses import asdict
 from json import dumps, loads
 
-from consts import OutputDirectory
-from exceptions import BenchmarkError
-from models import ExecTimeStats
+from .consts import OutputDirectory
+from .exceptions import BenchmarkError
+from .models import ExecTimeStats
 
 OutputFile = OutputDirectory / "stats.json"
 

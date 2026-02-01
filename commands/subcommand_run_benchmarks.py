@@ -7,10 +7,10 @@ from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
 
-from dataclass_json_io import dump_stats_models_to_json
-from exceptions import BenchmarkError, ConfigError
-from load_configs import check_and_load_config
-from models import Configs, ExecTimeStats
+from core.dataclass_json_io import dump_stats_models_to_json
+from core.exceptions import BenchmarkError, ConfigError
+from core.load_configs import check_and_load_config
+from core.models import Configs, ExecTimeStats
 
 Logger = getLogger("benchmark")
 
@@ -132,12 +132,12 @@ def main() -> None:
     try:
         configs = check_and_load_config()
     except ConfigError as e:
-        raise SystemExit from e
+        raise SystemExit(e) from e
 
     try:
         _run_benchmarks(configs)
     except BenchmarkError as e:
-        raise SystemExit from e
+        raise SystemExit(e) from e
 
 
 if __name__ == "__main__":
