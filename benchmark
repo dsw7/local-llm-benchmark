@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Please choose an option:"
+echo "[1] Run benchmarks"
+echo "[2] Generate normal distributions"
+
+read -rp "Enter 1 or 2: " user_input
+
+if [ "$user_input" == "1" ]; then
+    python3 commands/subcommand_run_benchmarks.py
+elif [ "$user_input" == "2" ]; then
+    python3 commands/subcommand_plot_normal_distributions.py
+else
+    echo "Invalid input. You must input 1 or 2. Exiting with error."
+    exit 1
+fi
