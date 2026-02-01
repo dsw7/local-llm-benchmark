@@ -1,7 +1,7 @@
 from subprocess import run, CalledProcessError
-from core.consts import OutputDirectory
+from core.consts import DIR_OUTPUT
 
-LaTeXDirectory = OutputDirectory / "latex"
+LaTeXDirectory = DIR_OUTPUT / "latex"
 
 
 def _assemble_technical_details_section() -> str:

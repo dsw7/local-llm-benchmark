@@ -71,7 +71,7 @@ def _run_and_time_queries(configs: Configs) -> list[ExecTimeStats]:
                 Back.GREEN + f"Run {run} | {server} | {configs.model}" + Style.RESET_ALL
             )
             exec_time = _run_and_time_query(server, configs.prompt, configs.model)
-            Logger.info(f"Execution time: {exec_time:.3f}s")
+            Logger.info("Execution time: %.3fs", exec_time)
             exec_times.append(exec_time)
 
         results.append(

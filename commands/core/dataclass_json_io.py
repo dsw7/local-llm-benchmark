@@ -1,11 +1,11 @@
 from dataclasses import asdict
 from json import dumps, loads
 
-from .consts import OutputDirectory
+from .consts import DIR_OUTPUT
 from .exceptions import BenchmarkError
 from .models import ExecTimeStats
 
-OutputFile = OutputDirectory / "stats.json"
+OutputFile = DIR_OUTPUT / "stats.json"
 
 
 def dump_stats_models_to_json(stats: list[ExecTimeStats], prompt: str) -> None:

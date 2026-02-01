@@ -5,16 +5,15 @@ from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
 
-from core.consts import PlotsDirectory
+from core.consts import DIR_OUTPUT
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
 from core.models import ExecTimeStats
 
+_DIR_PLOTS = DIR_OUTPUT / "plots"
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
-
-Logger = getLogger("benchmark")
 
 plt.rcParams.update(
     {
@@ -26,7 +25,7 @@ plt.rcParams.update(
 
 
 def _get_plot_filename(host: str) -> Path:
-    return PlotsDirectory / f"results_{host.replace(':', '_')}.pdf"
+    return _DIR_PLOTS / f"results_{host.replace(':', '_')}.pdf"
 
 
 def _plot_normal_distribution(stats: ExecTimeStats) -> None:
@@ -48,7 +47,9 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     ax.spines["right"].set_visible(False)
 
     path_to_plot = _get_plot_filename(stats.host)
-    Logger.info("Exporting plot for host %s to %s", stats.host, path_to_plot)
+    getLogger("benchmark").info(
+        "Exporting plot for host %s to %s", stats.host, path_to_plot
+    )
 
     plt.tight_layout()
     plt.savefig(path_to_plot)
@@ -62,6 +63,9 @@ def _export_normal_distribution_plots() -> None:
 
 
 def main() -> None:
+    if not _DIR_PLOTS.exists():
+        _DIR_PLOTS.mkdir()
+
     try:
         _export_normal_distribution_plots()
     except BenchmarkError as e:
