@@ -59,6 +59,7 @@ def _export_normal_distribution_plots() -> None:
     for s in stats:
         _plot_normal_distribution(s)
 
+
 def main() -> None:
     try:
         _export_normal_distribution_plots()

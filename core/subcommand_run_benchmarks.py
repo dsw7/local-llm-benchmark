@@ -7,10 +7,10 @@ from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
 
-from .configs import check_and_load_config
-from .dataclass_json_io import dump_stats_models_to_json
-from .exceptions import BenchmarkError, ConfigError
-from .models import Configs, ExecTimeStats
+from dataclass_json_io import dump_stats_models_to_json
+from exceptions import BenchmarkError, ConfigError
+from load_configs import check_and_load_config
+from models import Configs, ExecTimeStats
 
 Logger = getLogger("benchmark")
 
