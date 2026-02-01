@@ -1,4 +1,4 @@
-from subprocess import run
+from subprocess import run, CalledProcessError
 from core.consts import OutputDirectory, PlotsDirectory
 
 LaTeXDirectory = OutputDirectory / "latex"
@@ -47,7 +47,10 @@ def main() -> None:
         f"-output-directory={LaTeXDirectory}",
         f"{latex_file}",
     ]
-    run(command, check=True)
+    try:
+        run(command, check=True)
+    except CalledProcessError as e:
+        raise SystemExit(e) from e
 
 
 if __name__ == "__main__":
