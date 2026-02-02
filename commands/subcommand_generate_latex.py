@@ -9,13 +9,10 @@ _DIR_LATEX_FILES = DIR_OUTPUT / "latex"
 def _assemble_technical_details_section(prompt: str) -> str:
     return rf"""\section{{Technical details}}
 \subsection*{{Basic test parameters:}}
-\begin{{tabular}}{{|l|l|}}
-  \textbf{{Parameter}} & \textbf{{Value}} \\
-  \hline
+\begin{{tabularx}}{{\textwidth}}{{XX}}
   Acquisition date & \today \\
-  \hline
   Acquisition time & \currenttime \\
-\end{{tabular}}
+\end{{tabularx}}
 
 \subsection*{{Prompt:}}
 \begin{{verbatim}}
@@ -30,10 +27,11 @@ def _assemble_full_text() -> str:
     return rf"""\documentclass[10pt]{{article}}
 
 \usepackage{{courier}}
+\usepackage{{datetime}}
 \usepackage{{geometry}}
 \usepackage{{graphicx}}
+\usepackage{{tabularx}}
 \usepackage{{titlesec}}
-\usepackage{{datetime}}
 
 \geometry{{margin=1in}}
 \titleformat{{\section}}{{\bfseries\large}}{{}}{{0em}}{{}}[\titlerule]
