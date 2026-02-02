@@ -47,6 +47,8 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 
 
 def _assemble_stats_subsection(entry: ExecutionTimes) -> str:
+    Logger.info("Assembling statistics subsection for host %s", entry.host)
+
     return rf"""\subsection*{{Statistics}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
   Mean execution time & {entry.get_mean_exec_time(ndigits=3)} s \\
@@ -58,29 +60,33 @@ def _assemble_stats_subsection(entry: ExecutionTimes) -> str:
 """
 
 
-def _assemble_host_section(entry: ExecutionTimes) -> str:
-    Logger.info("Assembling statistics section for host %s", entry.host)
-
+def _assemble_normal_distribution_subsection(entry: ExecutionTimes) -> str:
+    Logger.info("Assembling normal distribution subsection for host %s", entry.host)
     path_norm_dist = DIR_PLOTS / entry.get_pdf_name_from_host()
 
     if not path_norm_dist.exists():
         Logger.warning(
-            "Cannot locate %s. Cannot add statistics section", path_norm_dist
+            "Cannot locate %s. Cannot add normal distribution", path_norm_dist
         )
-        return rf"""\section{{{entry.host}}}
+        return r"""\subsection*{{Normal distribution}}
 No data.
-\newpage
 """
 
-    return rf"""\section{{{entry.host}}}
-{_assemble_stats_subsection(entry)}
-
-\subsection*{{Normal distribution:}}
+    return rf"""\subsection*{{Normal distribution}}
 \begin{{figure}}[ht]
   \centering
   \includegraphics{{{path_norm_dist}}}
   \caption{{Normal distribution for host {entry.host}}}
 \end{{figure}}
+"""
+
+
+def _assemble_host_section(entry: ExecutionTimes) -> str:
+    Logger.info("Assembling results section for host %s", entry.host)
+
+    return rf"""\section{{{entry.host}}}
+{_assemble_stats_subsection(entry)}
+{_assemble_normal_distribution_subsection(entry)}
 \newpage
 """
 
