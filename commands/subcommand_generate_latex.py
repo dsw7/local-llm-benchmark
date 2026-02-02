@@ -1,7 +1,7 @@
 from subprocess import run, CalledProcessError
 from core.consts import DIR_OUTPUT
 
-LaTeXDirectory = DIR_OUTPUT / "latex"
+_DIR_LATEX_FILES = DIR_OUTPUT / "latex"
 
 
 def _assemble_technical_details_section() -> str:
@@ -34,17 +34,18 @@ def _assemble_full_text() -> str:
 
 
 def main() -> None:
-    if not LaTeXDirectory.exists():
-        LaTeXDirectory.mkdir()
+    if not _DIR_LATEX_FILES.exists():
+        _DIR_LATEX_FILES.mkdir()
 
-    latex_file = LaTeXDirectory / "report.tex"
-    latex_file.write_text(_assemble_full_text())
+    path_report_tex = _DIR_LATEX_FILES / "report.tex"
+    report = _assemble_full_text()
+    path_report_tex.write_text(report)
 
     command = [
         "pdflatex",
         "-interaction=nonstopmode",
-        f"-output-directory={LaTeXDirectory}",
-        f"{latex_file}",
+        f"-output-directory={_DIR_LATEX_FILES}",
+        f"{path_report_tex}",
     ]
     try:
         run(command, check=True)
