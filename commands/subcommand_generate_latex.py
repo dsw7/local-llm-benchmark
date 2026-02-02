@@ -38,6 +38,15 @@ def _assemble_host_section(entry: ExecutionTimes) -> str:
 
     path_norm_dist = DIR_PLOTS / entry.get_pdf_name_from_host()
 
+    if not path_norm_dist.exists():
+        Logger.warning(
+            "Cannot locate %s. Cannot add statistics section", path_norm_dist
+        )
+        return rf"""\section{{{entry.host}}}
+No data.
+\newpage
+"""
+
     return rf"""\section{{{entry.host}}}
 \subsection*{{Statistics:}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
