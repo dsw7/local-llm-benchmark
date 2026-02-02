@@ -46,6 +46,18 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 """
 
 
+def _assemble_stats_subsection(entry: ExecutionTimes) -> str:
+    return rf"""\subsection*{{Statistics}}
+\begin{{tabularx}}{{\textwidth}}{{XX}}
+  Mean execution time & {entry.get_mean_exec_time(ndigits=3)} s \\
+  Stardard deviation of execution time & {entry.get_stdev_exec_time(ndigits=3)} s \\
+  Median execution time & {entry.get_median_exec_time(ndigits=3)} s \\
+  Minimum execution time & {entry.get_min_exec_time(ndigits=3)} s \\
+  Maximum execution time & {entry.get_max_exec_time(ndigits=3)} s \\
+\end{{tabularx}}
+"""
+
+
 def _assemble_host_section(entry: ExecutionTimes) -> str:
     Logger.info("Assembling statistics section for host %s", entry.host)
 
@@ -61,14 +73,7 @@ No data.
 """
 
     return rf"""\section{{{entry.host}}}
-\subsection*{{Statistics:}}
-\begin{{tabularx}}{{\textwidth}}{{XX}}
-  Mean execution time & {entry.get_mean_exec_time(ndigits=3)} s \\
-  Stardard deviation of execution time & {entry.get_stdev_exec_time(ndigits=3)} s \\
-  Median execution time & {entry.get_median_exec_time(ndigits=3)} s \\
-  Minimum execution time & {entry.get_min_exec_time(ndigits=3)} s \\
-  Maximum execution time & {entry.get_max_exec_time(ndigits=3)} s \\
-\end{{tabularx}}
+{_assemble_stats_subsection(entry)}
 
 \subsection*{{Normal distribution:}}
 \begin{{figure}}[ht]
