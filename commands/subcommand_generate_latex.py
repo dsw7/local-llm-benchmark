@@ -13,22 +13,35 @@ _DIR_LATEX_FILES = DIR_OUTPUT / "latex"
 _ENABLE_PDFLATEX_STDOUT = False
 
 
-def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
-    Logger.info("Assembling technical details section")
+def _assemble_test_params_subsection(benchmark_obj: Benchmark) -> str:
+    Logger.info("Assembling test parameters subsection")
 
-    return rf"""\section{{Technical details}}
-\subsection*{{Basic test parameters:}}
+    return rf"""\subsection*{{Test parameters}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
   Acquisition date & \today \\
   Acquisition time & \currenttime \\
   Model & {benchmark_obj.model} \\
   Sample size & {benchmark_obj.sample_size} \\
 \end{{tabularx}}
+"""
 
-\subsection*{{Prompt:}}
+
+def _assemble_prompt_subsection(prompt: str) -> str:
+    Logger.info("Assembling prompt subsection")
+
+    return rf"""\subsection*{{Prompt}}
 \begin{{verbatim}}
-{benchmark_obj.prompt}
+{prompt.strip()}
 \end{{verbatim}}
+"""
+
+
+def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
+    Logger.info("Assembling technical details section")
+
+    return rf"""\section{{Technical details}}
+{_assemble_test_params_subsection(benchmark_obj)}
+{_assemble_prompt_subsection(benchmark_obj.prompt)}
 \newpage
 """
 
