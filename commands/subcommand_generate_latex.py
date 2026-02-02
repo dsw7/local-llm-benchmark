@@ -1,5 +1,6 @@
 from logging import getLogger
-from subprocess import run, CalledProcessError
+from pathlib import Path
+from subprocess import run, CalledProcessError, PIPE
 
 from core.consts import DIR_OUTPUT
 from core.dataclass_json_io import load_stats_models_from_json
@@ -9,6 +10,7 @@ from core.models import Benchmark, ExecutionTimes
 Logger = getLogger("benchmark")
 
 _DIR_LATEX_FILES = DIR_OUTPUT / "latex"
+_ENABLE_PDFLATEX_STDOUT = False
 
 
 def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
@@ -82,6 +84,32 @@ def _assemble_full_text(benchmark_obj: Benchmark) -> str:
 """
 
 
+def _compile_latex_source(path_to_source: Path) -> None:
+    Logger.info("Compiling LaTeX source %s", path_to_source)
+
+    command = [
+        "pdflatex",
+        "-interaction=nonstopmode",
+        f"-output-directory={_DIR_LATEX_FILES}",
+        f"{path_to_source}",
+    ]
+
+    try:
+        process = run(command, stdout=PIPE, stderr=PIPE, check=True, text=True)
+    except CalledProcessError as e:
+        for line in e.stdout.splitlines():
+            Logger.error(line)
+
+        for line in e.stderr.splitlines():
+            Logger.error(line)
+
+        raise BenchmarkError(str(e)) from e
+
+    if _ENABLE_PDFLATEX_STDOUT:
+        for line in process.stdout.splitlines():
+            Logger.info(line)
+
+
 def main() -> None:
     if not _DIR_LATEX_FILES.exists():
         _DIR_LATEX_FILES.mkdir()
@@ -93,22 +121,16 @@ def main() -> None:
     except BenchmarkError as e:
         raise SystemExit(e) from e
 
-    path_report_tex = _DIR_LATEX_FILES / "report.tex"
-    report = _assemble_full_text(benchmark_obj)
-    path_report_tex.write_text(report)
+    path_latex_source = _DIR_LATEX_FILES / "report.tex"
+    latex_source = _assemble_full_text(benchmark_obj)
+    path_latex_source.write_text(latex_source)
 
-    command = [
-        "pdflatex",
-        "-interaction=nonstopmode",
-        f"-output-directory={_DIR_LATEX_FILES}",
-        f"{path_report_tex}",
-    ]
     try:
-        run(command, check=True)
-    except CalledProcessError as e:
+        _compile_latex_source(path_latex_source)
+    except BenchmarkError as e:
         raise SystemExit(e) from e
 
-    path_report_pdf = path_report_tex.with_suffix(".pdf")
+    path_report_pdf = path_latex_source.with_suffix(".pdf")
     Logger.info("Exported final report to %s", path_report_pdf)
 
 
