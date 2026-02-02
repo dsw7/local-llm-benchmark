@@ -15,10 +15,14 @@ _PLOT_HEIGHT = 3  # inches
 
 plt.rcParams.update(
     {
+        "axes.spines.right": False,
+        "axes.spines.top": False,
         "figure.figsize": [_PLOT_WIDTH, _PLOT_HEIGHT],
         "font.family": "monospace",
         "font.monospace": ["Courier", "Courier New", "DejaVu Sans Mono"],
         "font.size": _PLOT_FONT_SIZE,
+        "ytick.labelleft": False,
+        "ytick.left": False,
     }
 )
 
@@ -35,11 +39,6 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
     plt.scatter(entry.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
     plt.xlabel("Time (s)")
-
-    ax = plt.gca()
-    ax.tick_params(axis="y", left=False, labelleft=False)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
 
     path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
     getLogger("benchmark").info(
