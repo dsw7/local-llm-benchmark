@@ -36,7 +36,7 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 def _assemble_host_section(entry: ExecutionTimes) -> str:
     Logger.info("Assembling statistics section for host %s", entry.host)
 
-    path_norm_dist = DIR_PLOTS / f"results_{entry.host.replace(':', '_')}.pdf"
+    path_norm_dist = DIR_PLOTS / entry.get_pdf_name_from_host()
 
     return rf"""\section{{{entry.host}}}
 \subsection*{{Statistics:}}

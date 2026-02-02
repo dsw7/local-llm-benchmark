@@ -1,5 +1,4 @@
 from logging import getLogger
-from pathlib import Path
 
 from matplotlib import pyplot as plt
 from numpy import linspace
@@ -23,23 +22,17 @@ plt.rcParams.update(
 )
 
 
-def _get_plot_filename(host: str) -> Path:
-    return DIR_PLOTS / f"results_{host.replace(':', '_')}.pdf"
-
-
-def _plot_normal_distribution(exec_times_per_host: ExecutionTimes) -> None:
-    mu = exec_times_per_host.get_mean_exec_time()
-    sigma = exec_times_per_host.get_stdev_exec_time()
+def _plot_normal_distribution(entry: ExecutionTimes) -> None:
+    mu = entry.get_mean_exec_time()
+    sigma = entry.get_stdev_exec_time()
 
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     f_x = norm.pdf(x, mu, sigma)
-    f_exec_times = norm.pdf(exec_times_per_host.exec_times, mu, sigma)
+    f_exec_times = norm.pdf(entry.exec_times, mu, sigma)
 
     plt.figure(figsize=(_PLOT_WIDTH, _PLOT_HEIGHT))
     plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
-    plt.scatter(
-        exec_times_per_host.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x"
-    )
+    plt.scatter(entry.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
     plt.xlabel("Time (s)")
 
     ax = plt.gca()
@@ -47,9 +40,9 @@ def _plot_normal_distribution(exec_times_per_host: ExecutionTimes) -> None:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    path_to_plot = _get_plot_filename(exec_times_per_host.host)
+    path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
     getLogger("benchmark").info(
-        "Exporting plot for host %s to %s", exec_times_per_host.host, path_to_plot
+        "Exporting plot for host %s to %s", entry.host, path_to_plot
     )
 
     plt.tight_layout()
