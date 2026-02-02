@@ -7,15 +7,14 @@ I use this program to benchmark my infrastructure for the following cases:
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
 - When running [GPTifier](https://github.com/dsw7/GPTifier) commands via the Ollama stream
 
-## Benchmarking LLM performance
-### About
-This script runs a dummy prompt against a specified LLM on several machines and
-several times. The execution times are gathered from which various basic
+## About
+This programs runs a dummy prompt against a specified LLM on several machines
+and several times. The execution times are gathered from which various basic
 statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
 performance of my LLMs on prem.
 
-### Basic setup
+## Setup
 Copy the example TOML file:
 ```bash
 cp configs_example.toml configs.toml
@@ -24,13 +23,17 @@ The `configs.toml` file is the "production" file and is excluded via
 `.gitignore`. Edit the file to match your specifications (i.e. set the dummy
 prompt and IP addresses).
 
-### Running some benchmarks
-Set up a virtual environment and run the bash script:
+## Benchmarking LLM performance
+
+### Step 1 - Run the benchmarks
+Set up a Python virtual environment and run the bash script:
 ```bash
 ./benchmark
 ```
-And input <kbd>1</kbd> when prompted. When complete, the program will output
-something akin to:
+And input <kbd>1</kbd> when prompted. The program will gather `rounds`
+(specified via `configs.toml`) number of inference times for `prompt` against
+`model` for each `host`. When complete, the program will output something akin
+to:
 ```
 All values are provided in seconds
 ┌──────────────────┬───────────────┬──────────┬─────────┬──────────┬──────────┬──────────┬───────────────┐
@@ -40,13 +43,22 @@ All values are provided in seconds
 │ 10.0.0.115:11434 │ gemma3:latest │ 18.0551  │ 0.62221 │ 17.9943  │ 17.3745  │ 19.0215  │             5 │
 └──────────────────┴───────────────┴──────────┴─────────┴──────────┴──────────┴──────────┴───────────────┘
 ```
+If sufficient, one can stop here.
 
-### Generating Gaussian distributions for inference times
-Set up a virtual environment and run the bash script:
+### Step 2 - Generate Gaussian distributions for inference times
+Set up a Python virtual environment as before and run the bash script:
 ```bash
 ./benchmark
 ```
-And input <kbd>2</kbd> when prompted. When complete, the program will output a
-plot of a probability distribution for the set of measurements obtained for
-each machine.  These plots will be placed under the `output/plots` folder
-(which will automatically be generated when the program is first invoked).
+Then input <kbd>2</kbd> when prompted. The program will generate a set of
+Gaussian distributions for the inference times obtained from each machine. If
+this is sufficient, one can stop here.
+
+### Step 3 - Generate a LaTeX report for the measurements
+As before, run the bash script:
+```bash
+./benchmark
+```
+Then input <kbd>3</kbd> when prompted. The program will generate a full,
+comprehensive report of all the statistics gathered as part of the benchmarking
+process. Note that this requires that steps 1 and 2 be previously completed.
