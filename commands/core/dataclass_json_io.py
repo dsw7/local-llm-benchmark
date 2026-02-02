@@ -5,7 +5,7 @@ from .consts import DIR_OUTPUT
 from .exceptions import BenchmarkError
 from .models import ExecTimeStats
 
-OutputFile = DIR_OUTPUT / "stats.json"
+_BENCHMARK_JSON = DIR_OUTPUT / "stats.json"
 
 
 def dump_stats_models_to_json(stats: list[ExecTimeStats], prompt: str) -> None:
@@ -19,14 +19,14 @@ def dump_stats_models_to_json(stats: list[ExecTimeStats], prompt: str) -> None:
         "servers": servers,
     }
 
-    OutputFile.write_text(dumps(json, indent=4))
+    _BENCHMARK_JSON.write_text(dumps(json, indent=4))
 
 
 def load_stats_models_from_json() -> tuple[list[ExecTimeStats], str]:
-    if not OutputFile.exists():
-        raise BenchmarkError(f"{OutputFile} does not exist. Cannot proceed")
+    if not _BENCHMARK_JSON.exists():
+        raise BenchmarkError(f"{_BENCHMARK_JSON} does not exist. Cannot proceed")
 
-    contents = loads(OutputFile.read_text())
+    contents = loads(_BENCHMARK_JSON.read_text())
 
     stats = []
 
