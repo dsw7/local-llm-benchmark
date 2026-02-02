@@ -1,4 +1,4 @@
 from pathlib import Path
 
-OutputDirectory = Path("output")
-PlotsDirectory = OutputDirectory / "plots"
+DIR_OUTPUT = Path("output")
+DIR_PLOTS = DIR_OUTPUT / "plots"

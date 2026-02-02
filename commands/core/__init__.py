@@ -1,5 +1,5 @@
 import logging
-from .consts import OutputDirectory, PlotsDirectory
+from .consts import DIR_OUTPUT
 
 logging.basicConfig(
     level=logging.INFO,
@@ -7,8 +7,5 @@ logging.basicConfig(
     datefmt="%Y-%m-%dT%H:%M:%S",
 )
 
-if not OutputDirectory.exists():
-    OutputDirectory.mkdir()
-
-if not PlotsDirectory.exists():
-    PlotsDirectory.mkdir()
+if not DIR_OUTPUT.exists():
+    DIR_OUTPUT.mkdir()

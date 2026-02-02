@@ -11,11 +11,12 @@ class Configs:
 
 
 @dataclass
-class ExecTimeStats:
+class ExecutionTimes:
     exec_times: list[float]
     host: str
-    model: str
-    sample_size: int
+
+    def get_pdf_name_from_host(self) -> str:
+        return f"results_{self.host.replace(':', '_')}.pdf"
 
     def get_mean_exec_time(self, ndigits: int | None = None) -> float:
         mean_val = mean(self.exec_times)
@@ -41,8 +42,26 @@ class ExecTimeStats:
 
         return round(median_val, ndigits)
 
-    def get_min_exec_time(self) -> float:
-        return min(self.exec_times)
+    def get_min_exec_time(self, ndigits: int | None = None) -> float:
+        min_val = min(self.exec_times)
 
-    def get_max_exec_time(self) -> float:
-        return max(self.exec_times)
+        if ndigits is None:
+            return min_val
+
+        return round(min_val, ndigits)
+
+    def get_max_exec_time(self, ndigits: int | None = None) -> float:
+        max_val = max(self.exec_times)
+
+        if ndigits is None:
+            return max_val
+
+        return round(max_val, ndigits)
+
+
+@dataclass
+class Benchmark:
+    exec_times_per_host: list[ExecutionTimes]
+    model: str
+    prompt: str
+    sample_size: int
