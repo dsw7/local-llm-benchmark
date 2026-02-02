@@ -36,6 +36,10 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 def _assemble_host_section(entry: ExecutionTimes) -> str:
     Logger.info("Assembling statistics section for host %s", entry.host)
 
+    path_norm_dist = (
+        DIR_OUTPUT / "plots" / f"results_{entry.host.replace(':', '_')}.pdf"
+    )
+
     return rf"""\section{{{entry.host}}}
 \subsection*{{Statistics:}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
@@ -45,6 +49,13 @@ def _assemble_host_section(entry: ExecutionTimes) -> str:
   Minimum execution time & {entry.get_min_exec_time(ndigits=3)} s \\
   Maximum execution time & {entry.get_max_exec_time(ndigits=3)} s \\
 \end{{tabularx}}
+
+\subsection*{{Normal distribution:}}
+\begin{{figure}}[ht]
+  \centering
+  \includegraphics{{{path_norm_dist}}}
+  \caption{{Normal distribution for host {entry.host}}}
+\end{{figure}}
 \newpage
 """
 
