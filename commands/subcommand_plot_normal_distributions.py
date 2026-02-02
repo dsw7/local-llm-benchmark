@@ -5,12 +5,11 @@ from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
 
-from core.consts import DIR_OUTPUT
+from core.consts import DIR_PLOTS
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
 from core.models import Benchmark, ExecutionTimes
 
-_DIR_PLOTS = DIR_OUTPUT / "plots"
 _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
@@ -25,7 +24,7 @@ plt.rcParams.update(
 
 
 def _get_plot_filename(host: str) -> Path:
-    return _DIR_PLOTS / f"results_{host.replace(':', '_')}.pdf"
+    return DIR_PLOTS / f"results_{host.replace(':', '_')}.pdf"
 
 
 def _plot_normal_distribution(exec_times_per_host: ExecutionTimes) -> None:
@@ -65,8 +64,8 @@ def _export_normal_distribution_plots() -> None:
 
 
 def main() -> None:
-    if not _DIR_PLOTS.exists():
-        _DIR_PLOTS.mkdir()
+    if not DIR_PLOTS.exists():
+        DIR_PLOTS.mkdir()
 
     try:
         _export_normal_distribution_plots()

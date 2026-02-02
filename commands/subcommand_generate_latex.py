@@ -2,7 +2,7 @@ from logging import getLogger
 from pathlib import Path
 from subprocess import run, CalledProcessError, PIPE
 
-from core.consts import DIR_OUTPUT
+from core.consts import DIR_OUTPUT, DIR_PLOTS
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
 from core.models import Benchmark, ExecutionTimes
@@ -36,9 +36,7 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 def _assemble_host_section(entry: ExecutionTimes) -> str:
     Logger.info("Assembling statistics section for host %s", entry.host)
 
-    path_norm_dist = (
-        DIR_OUTPUT / "plots" / f"results_{entry.host.replace(':', '_')}.pdf"
-    )
+    path_norm_dist = DIR_PLOTS / f"results_{entry.host.replace(':', '_')}.pdf"
 
     return rf"""\section{{{entry.host}}}
 \subsection*{{Statistics:}}
