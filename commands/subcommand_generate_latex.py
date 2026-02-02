@@ -1,3 +1,4 @@
+from logging import getLogger
 from subprocess import run, CalledProcessError
 
 from core.consts import DIR_OUTPUT
@@ -5,10 +6,14 @@ from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
 from core.models import Benchmark, ExecutionTimes
 
+Logger = getLogger("benchmark")
+
 _DIR_LATEX_FILES = DIR_OUTPUT / "latex"
 
 
 def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
+    Logger.info("Assembling technical details section")
+
     return rf"""\section{{Technical details}}
 \subsection*{{Basic test parameters:}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
@@ -27,6 +32,8 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 
 
 def _assemble_host_section(entry: ExecutionTimes) -> str:
+    Logger.info("Assembling statistics section for host %s", entry.host)
+
     return rf"""\section{{{entry.host}}}
 \subsection*{{Statistics:}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
@@ -50,6 +57,8 @@ def _assemble_host_sections(benchmark_obj: Benchmark) -> str:
 
 
 def _assemble_full_text(benchmark_obj: Benchmark) -> str:
+    Logger.info("Assembling preamble and body")
+
     return rf"""\documentclass[10pt]{{article}}
 
 \usepackage{{courier}}
@@ -77,6 +86,8 @@ def main() -> None:
     if not _DIR_LATEX_FILES.exists():
         _DIR_LATEX_FILES.mkdir()
 
+    Logger.info("Generating final LaTeX report")
+
     try:
         benchmark_obj: Benchmark = load_stats_models_from_json()
     except BenchmarkError as e:
@@ -96,6 +107,9 @@ def main() -> None:
         run(command, check=True)
     except CalledProcessError as e:
         raise SystemExit(e) from e
+
+    path_report_pdf = path_report_tex.with_suffix(".pdf")
+    Logger.info("Exported final report to %s", path_report_pdf)
 
 
 if __name__ == "__main__":
