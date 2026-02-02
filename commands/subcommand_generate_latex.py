@@ -30,9 +30,9 @@ def _assemble_prompt_subsection(prompt: str) -> str:
     Logger.info("Assembling prompt subsection")
 
     return rf"""\subsection*{{Prompt}}
-\begin{{verbatim}}
+\begin{{Verbatim}}[numbers=left, numbersep=2mm, frame=leftline, framesep=2mm]
 {prompt.strip()}
-\end{{verbatim}}
+\end{{Verbatim}}
 """
 
 
@@ -107,6 +107,7 @@ def _assemble_full_text(benchmark_obj: Benchmark) -> str:
 
 \usepackage{{courier}}
 \usepackage{{datetime}}
+\usepackage{{fancyvrb}}
 \usepackage{{geometry}}
 \usepackage{{graphicx}}
 \usepackage{{tabularx}}
