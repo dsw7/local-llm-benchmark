@@ -50,12 +50,12 @@ def _assemble_host_section(entry: ExecutionTimes) -> str:
 
 
 def _assemble_host_sections(benchmark_obj: Benchmark) -> str:
-    text = ""
+    sections = []
 
     for entry in benchmark_obj.exec_times_per_host:
-        text += _assemble_host_section(entry)
+        sections.append(_assemble_host_section(entry))
 
-    return text
+    return "\n".join(sections)
 
 
 def _assemble_full_text(benchmark_obj: Benchmark) -> str:
