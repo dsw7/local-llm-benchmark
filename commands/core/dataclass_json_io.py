@@ -14,6 +14,7 @@ def dump_stats_models_to_json(benchmark_obj: Benchmark) -> None:
         "model": benchmark_obj.model,
         "prompt": benchmark_obj.prompt,
         "sample_size": benchmark_obj.sample_size,
+        "timestamp": benchmark_obj.timestamp,
     }
 
     _BENCHMARK_JSON.write_text(dumps(json, indent=4))
@@ -36,4 +37,5 @@ def load_stats_models_from_json() -> Benchmark:
         model=json["model"],
         prompt=json["prompt"],
         sample_size=json["sample_size"],
+        timestamp=json["timestamp"],
     )

@@ -18,8 +18,7 @@ def _assemble_test_params_subsection(benchmark_obj: Benchmark) -> str:
 
     return rf"""\subsection*{{Test parameters}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
-  Acquisition date & \today \\
-  Acquisition time & \currenttime \\
+  Approximate data acquisition time & {benchmark_obj.timestamp} \\
   Model & {benchmark_obj.model} \\
   Sample size & {benchmark_obj.sample_size} \\
 \end{{tabularx}}

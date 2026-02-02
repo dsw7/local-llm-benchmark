@@ -1,5 +1,6 @@
-from logging import getLogger
+from datetime import datetime
 from functools import cache
+from logging import getLogger
 from time import time
 
 from colorama import Back, Style
@@ -86,6 +87,7 @@ def _run_and_time_queries(configs: Configs) -> Benchmark:
         model=configs.model,
         prompt=configs.prompt,
         sample_size=configs.rounds,
+        timestamp=datetime.now().isoformat(),
     )
 
 
