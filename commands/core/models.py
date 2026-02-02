@@ -65,3 +65,4 @@ class Benchmark:
     model: str
     prompt: str
     sample_size: int
+    timestamp: str
