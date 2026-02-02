@@ -7,6 +7,14 @@ I use this program to benchmark my infrastructure for the following cases:
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
 - When running [GPTifier](https://github.com/dsw7/GPTifier) commands via the Ollama stream
 
+# Table of Contents
+1. [About](#about)
+2. [Setup](#setup)
+3. [Benchmarking LLM performance](#benchmarking-llm-performance)
+   - [Step 1 - Run the benchmarks](#step-1---run-the-benchmarks)
+   - [Step 2 - Generate Gaussian distributions for inference times](#step-2---generate-gaussian-distributions-for-inference-times)
+   - [Step 3 - Generate a LaTeX report for the measurements](#step-3---generate-a-latex-report-for-the-measurements)
+
 ## About
 This programs runs a dummy prompt against a specified LLM on several machines
 and several times. The execution times are gathered from which various basic
