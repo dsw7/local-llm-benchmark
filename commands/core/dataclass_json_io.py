@@ -5,7 +5,7 @@ from .consts import DIR_OUTPUT
 from .exceptions import BenchmarkError
 from .models import ExecTimeStats
 
-_BENCHMARK_JSON = DIR_OUTPUT / "stats.json"
+_BENCHMARK_JSON = DIR_OUTPUT / "benchmark.json"
 
 
 def dump_stats_models_to_json(stats: list[ExecTimeStats], prompt: str) -> None:
