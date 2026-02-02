@@ -8,7 +8,7 @@ from scipy.stats import norm
 from core.consts import DIR_OUTPUT
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
-from core.models import ExecTimeStats
+from core.models import Benchmark, ExecutionTimes
 
 _DIR_PLOTS = DIR_OUTPUT / "plots"
 _PLOT_FONT_SIZE = 8
@@ -28,17 +28,19 @@ def _get_plot_filename(host: str) -> Path:
     return _DIR_PLOTS / f"results_{host.replace(':', '_')}.pdf"
 
 
-def _plot_normal_distribution(stats: ExecTimeStats) -> None:
-    mu = stats.get_mean_exec_time()
-    sigma = stats.get_stdev_exec_time()
+def _plot_normal_distribution(exec_times_per_host: ExecutionTimes) -> None:
+    mu = exec_times_per_host.get_mean_exec_time()
+    sigma = exec_times_per_host.get_stdev_exec_time()
 
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     f_x = norm.pdf(x, mu, sigma)
-    f_exec_times = norm.pdf(stats.exec_times, mu, sigma)
+    f_exec_times = norm.pdf(exec_times_per_host.exec_times, mu, sigma)
 
     plt.figure(figsize=(_PLOT_WIDTH, _PLOT_HEIGHT))
     plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
-    plt.scatter(stats.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
+    plt.scatter(
+        exec_times_per_host.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x"
+    )
     plt.xlabel("Time (s)")
 
     ax = plt.gca()
@@ -46,9 +48,9 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    path_to_plot = _get_plot_filename(stats.host)
+    path_to_plot = _get_plot_filename(exec_times_per_host.host)
     getLogger("benchmark").info(
-        "Exporting plot for host %s to %s", stats.host, path_to_plot
+        "Exporting plot for host %s to %s", exec_times_per_host.host, path_to_plot
     )
 
     plt.tight_layout()
@@ -56,10 +58,10 @@ def _plot_normal_distribution(stats: ExecTimeStats) -> None:
 
 
 def _export_normal_distribution_plots() -> None:
-    stats, _ = load_stats_models_from_json()
+    benchmark_obj: Benchmark = load_stats_models_from_json()
 
-    for s in stats:
-        _plot_normal_distribution(s)
+    for exec_times in benchmark_obj.exec_times_per_host:
+        _plot_normal_distribution(exec_times)
 
 
 def main() -> None:

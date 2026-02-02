@@ -1,29 +1,33 @@
 from subprocess import run, CalledProcessError
-from core.dataclass_json_io import load_stats_models_from_json
+
 from core.consts import DIR_OUTPUT
+from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
+from core.models import Benchmark
 
 _DIR_LATEX_FILES = DIR_OUTPUT / "latex"
 
 
-def _assemble_technical_details_section(prompt: str) -> str:
+def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
     return rf"""\section{{Technical details}}
 \subsection*{{Basic test parameters:}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
   Acquisition date & \today \\
   Acquisition time & \currenttime \\
+  Model & {benchmark_obj.model} \\
+  Sample size & {benchmark_obj.sample_size} \\
 \end{{tabularx}}
 
 \subsection*{{Prompt:}}
 \begin{{verbatim}}
-{prompt}
+{benchmark_obj.prompt}
 \end{{verbatim}}
 \newpage
 """
 
 
 def _assemble_full_text() -> str:
-    _, prompt = load_stats_models_from_json()
+    benchmark_obj: Benchmark = load_stats_models_from_json()
     return rf"""\documentclass[10pt]{{article}}
 
 \usepackage{{courier}}
@@ -41,7 +45,7 @@ def _assemble_full_text() -> str:
 \tableofcontents
 \newpage
 
-{_assemble_technical_details_section(prompt=prompt)}
+{_assemble_technical_details_section(benchmark_obj)}
 
 \end{{document}}
 """
