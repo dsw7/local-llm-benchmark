@@ -4,7 +4,7 @@ Miscellenous utilities for benchmarking locally hosted LLMs (i.e. via
 
 **Note that I am not interested in benchmarking the models themselves. I am
 interested in benchmarking model inference times on my particular hardware.**
-Many projects exists for benchmarking models themselves, such as
+Many projects exist for benchmarking models themselves, such as
 [SuperGLUE](https://super.gluebenchmark.com/).
 
 I use this program to benchmark my infrastructure for the following cases:
@@ -21,7 +21,7 @@ I use this program to benchmark my infrastructure for the following cases:
   - [Step 3 - Generate a LaTeX report for the measurements](#step-3---generate-a-latex-report-for-the-measurements)
 
 ## About
-This programs runs a dummy prompt against a specified LLM on several machines
+This program runs a dummy prompt against a specified LLM on several machines
 and several times. The execution times are gathered from which various basic
 statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
