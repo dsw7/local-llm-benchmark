@@ -59,12 +59,17 @@ Set up a Python virtual environment as before and run the bash script:
 ./benchmark
 ```
 Then input <kbd>2</kbd> when prompted. The program will generate a set of
-Gaussian distributions for the inference times obtained from each machine. If
-this is sufficient, one can stop here.
+Gaussian distributions for the inference times obtained from each machine. For
+example:
 
 <p align="center">
   <img width=600 src=./docs/example_gemma_3_n_50.svg>
 </p>
+
+In this example, 50 trials were performed. The mean inference time is around
+2.15 seconds. One value appears to be more than 3 standard deviations away from
+the mean, and this value could be interpreted as an outlier (perhaps as a
+result of a spike in GPU demand).
 
 ### Step 3 - Generate a LaTeX report for the measurements
 As before, run the bash script:
