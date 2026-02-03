@@ -62,6 +62,10 @@ Then input <kbd>2</kbd> when prompted. The program will generate a set of
 Gaussian distributions for the inference times obtained from each machine. If
 this is sufficient, one can stop here.
 
+<p align="center">
+  <img width=600 src=./docs/example_gemma_3_n_50.svg>
+</p>
+
 ### Step 3 - Generate a LaTeX report for the measurements
 As before, run the bash script:
 ```bash
