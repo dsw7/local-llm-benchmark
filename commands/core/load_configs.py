@@ -7,7 +7,7 @@ from .models import Configs
 
 def _clamp_num_rounds(rounds: int) -> int:
     # minimum of 2 rounds needed to calculate standard deviation
-    return max(2, min(rounds, 10))
+    return max(2, min(rounds, 50))
 
 
 def check_and_load_config() -> Configs:

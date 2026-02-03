@@ -63,6 +63,8 @@ def _run_and_time_query(host: str, prompt: str, model: str) -> float:
 def _run_and_time_queries(configs: Configs) -> Benchmark:
     exec_times_per_host: list[ExecutionTimes] = []
 
+    Logger.info("Number of rounds per machine: %i", configs.rounds)
+
     for server in configs.servers:
         exec_times = []
 
