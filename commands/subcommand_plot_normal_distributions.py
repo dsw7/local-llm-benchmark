@@ -29,6 +29,17 @@ plt.rcParams.update(
 )
 
 
+def _plot_theoretical_distribution(mu: float, sigma: float) -> None:
+    x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
+    f_x = norm.pdf(x, mu, sigma)
+    plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
+
+
+def _plot_exec_times(mu: float, sigma: float, exec_times: list[float]) -> None:
+    f_exec_times = norm.pdf(exec_times, mu, sigma)
+    plt.scatter(exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
+
+
 def _add_standard_deviations(mu: float, sigma: float) -> None:
     x = [(mu + z * sigma) for z in range(-3, 4)]
     f_x = norm.pdf(x, mu, sigma)
@@ -58,16 +69,14 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     mu = entry.get_mean_exec_time()
     sigma = entry.get_stdev_exec_time()
 
-    x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-    f_x = norm.pdf(x, mu, sigma)
-    f_exec_times = norm.pdf(entry.exec_times, mu, sigma)
-
     plt.figure()
-    plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
-    plt.scatter(entry.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
+
+    _plot_theoretical_distribution(mu, sigma)
+    _plot_exec_times(mu, sigma, entry.exec_times)
+    _add_standard_deviations(mu, sigma)
+
     plt.xlabel("Time (s)")
 
-    _add_standard_deviations(mu, sigma)
     path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
     getLogger("benchmark").info(
         "Exporting plot for host %s to %s", entry.host, path_to_plot
