@@ -51,7 +51,7 @@ def _assemble_stats_subsection(entry: ExecutionTimes) -> str:
     return rf"""\subsection*{{Statistics}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
   Mean execution time & {entry.get_mean_exec_time(ndigits=3)} s \\
-  Stardard deviation of execution time & {entry.get_stdev_exec_time(ndigits=3)} s \\
+  Standard deviation of execution time & {entry.get_stdev_exec_time(ndigits=3)} s \\
   Median execution time & {entry.get_median_exec_time(ndigits=3)} s \\
   Minimum execution time & {entry.get_min_exec_time(ndigits=3)} s \\
   Maximum execution time & {entry.get_max_exec_time(ndigits=3)} s \\
