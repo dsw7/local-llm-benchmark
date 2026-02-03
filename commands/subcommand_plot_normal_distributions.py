@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Any
 
 from matplotlib import pyplot as plt
 from numpy import linspace
@@ -31,8 +32,22 @@ def _add_standard_deviations(mu: float, sigma: float) -> None:
     x = [(mu + z * sigma) for z in range(-3, 4)]
     f_x = norm.pdf(x, mu, sigma)
 
-    for xpos, ymax in zip(x, f_x):
+    kwargs: dict[str, Any] = {"ha": "center", "va": "bottom", "alpha": 0.5}
+
+    for z, ymax in zip(range(-3, 4), f_x):
+        xpos = mu + z * sigma
         plt.vlines(xpos, 0, ymax, colors="k", lw=0.5, alpha=0.5)
+
+        if z < -1:
+            plt.text(xpos, -0.05 * max(f_x), rf"$\mu {z}\sigma$", **kwargs)
+        elif z == -1:
+            plt.text(xpos, -0.05 * max(f_x), r"$\mu - \sigma$", **kwargs)
+        elif z == 0:
+            plt.text(xpos, -0.05 * max(f_x), r"$\mu$", **kwargs)
+        elif z == 1:
+            plt.text(xpos, -0.05 * max(f_x), r"$\mu + \sigma$", **kwargs)
+        else:
+            plt.text(xpos, -0.05 * max(f_x), rf"$\mu + {z}\sigma$", **kwargs)
 
 
 def _plot_normal_distribution(entry: ExecutionTimes) -> None:
