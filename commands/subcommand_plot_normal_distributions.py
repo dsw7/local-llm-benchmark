@@ -18,6 +18,7 @@ plt.rcParams.update(
     {
         "axes.spines.right": False,
         "axes.spines.top": False,
+        "axes.spines.left": False,
         "figure.figsize": [_PLOT_WIDTH, _PLOT_HEIGHT],
         "font.family": "monospace",
         "font.monospace": ["Courier", "Courier New", "DejaVu Sans Mono"],
@@ -33,21 +34,24 @@ def _add_standard_deviations(mu: float, sigma: float) -> None:
     f_x = norm.pdf(x, mu, sigma)
 
     kwargs: dict[str, Any] = {"ha": "center", "va": "bottom", "alpha": 0.5}
+    loc_labels = -0.075 * max(f_x)
 
     for z, ymax in zip(range(-3, 4), f_x):
         xpos = mu + z * sigma
         plt.vlines(xpos, 0, ymax, colors="k", lw=0.5, alpha=0.5)
 
         if z < -1:
-            plt.text(xpos, -0.05 * max(f_x), rf"$\mu {z}\sigma$", **kwargs)
+            plt.text(xpos, loc_labels, rf"$\mu {z}\sigma$", **kwargs)
         elif z == -1:
-            plt.text(xpos, -0.05 * max(f_x), r"$\mu - \sigma$", **kwargs)
+            plt.text(xpos, loc_labels, r"$\mu - \sigma$", **kwargs)
         elif z == 0:
-            plt.text(xpos, -0.05 * max(f_x), r"$\mu$", **kwargs)
+            plt.text(xpos, loc_labels, r"$\mu$", **kwargs)
         elif z == 1:
-            plt.text(xpos, -0.05 * max(f_x), r"$\mu + \sigma$", **kwargs)
+            plt.text(xpos, loc_labels, r"$\mu + \sigma$", **kwargs)
         else:
-            plt.text(xpos, -0.05 * max(f_x), rf"$\mu + {z}\sigma$", **kwargs)
+            plt.text(xpos, loc_labels, rf"$\mu + {z}\sigma$", **kwargs)
+
+    plt.ylim(-0.1 * max(f_x))
 
 
 def _plot_normal_distribution(entry: ExecutionTimes) -> None:
