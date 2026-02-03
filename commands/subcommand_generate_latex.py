@@ -127,8 +127,6 @@ def _assemble_full_text(benchmark_obj: Benchmark) -> str:
 
 
 def _compile_latex_source(path_to_source: Path) -> None:
-    Logger.info("Compiling LaTeX source %s", path_to_source)
-
     command = [
         "pdflatex",
         "-interaction=nonstopmode",
@@ -167,7 +165,12 @@ def main() -> None:
     latex_source = _assemble_full_text(benchmark_obj)
     path_latex_source.write_text(latex_source)
 
+    Logger.info("Compiling LaTeX source %s", path_latex_source)
+
     try:
+        # run program twice since latex often requires this
+        # to get cross references right
+        _compile_latex_source(path_latex_source)
         _compile_latex_source(path_latex_source)
     except BenchmarkError as e:
         raise SystemExit(e) from e
