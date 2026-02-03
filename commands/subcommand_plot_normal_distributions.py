@@ -27,6 +27,14 @@ plt.rcParams.update(
 )
 
 
+def _add_standard_deviations(mu: float, sigma: float) -> None:
+    x = [(mu + z * sigma) for z in range(-3, 4)]
+    f_x = norm.pdf(x, mu, sigma)
+
+    for xpos, ymax in zip(x, f_x):
+        plt.vlines(xpos, 0, ymax, colors="k", lw=0.5, alpha=0.5)
+
+
 def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     mu = entry.get_mean_exec_time()
     sigma = entry.get_stdev_exec_time()
@@ -40,6 +48,7 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     plt.scatter(entry.exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
     plt.xlabel("Time (s)")
 
+    _add_standard_deviations(mu, sigma)
     path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
     getLogger("benchmark").info(
         "Exporting plot for host %s to %s", entry.host, path_to_plot
