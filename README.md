@@ -2,6 +2,11 @@
 Miscellenous utilities for benchmarking locally hosted LLMs (i.e. via
 [Ollama](https://ollama.com/)) for various platform/hardware permutations.
 
+**Note that I am not interested in benchmarking the models themselves. I am
+interested in benchmarking model inference times on my particular hardware.**
+Many projects exists for benchmarking models themselves, such as
+[SuperGLUE](https://super.gluebenchmark.com/).
+
 I use this program to benchmark my infrastructure for the following cases:
 - When running [FuncGraft](https://github.com/dsw7/FuncGraft) in [local
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
