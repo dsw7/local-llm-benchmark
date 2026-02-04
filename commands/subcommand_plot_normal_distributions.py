@@ -13,6 +13,8 @@ _PLOT_FONT_SIZE = 8
 _PLOT_WIDTH = 5  # inches
 _PLOT_HEIGHT = 3  # inches
 
+Logger = getLogger("benchmark")
+
 plt.rcParams.update(
     {
         "axes.spines.right": False,
@@ -32,7 +34,7 @@ def _plot_theoretical_normal_curve(mu: float, sigma: float) -> None:
 
 
 def _plot_histogram(exec_times: list[float]) -> None:
-    plt.hist(
+    hist_rv = plt.hist(
         exec_times,
         alpha=0.5,
         bins=30,
@@ -41,9 +43,12 @@ def _plot_histogram(exec_times: list[float]) -> None:
         edgecolor="white",
         lw=0.25,
     )
+    bins = hist_rv[1]
+    Logger.info("The histogram bin width is %f seconds", bins[1] - bins[0])
 
 
 def _plot_normal_distribution(entry: ExecutionTimes) -> None:
+    Logger.info("Plotting normal distribution for host %s", entry.host)
     mu = entry.get_mean_exec_time()
     sigma = entry.get_stdev_exec_time()
 
@@ -51,12 +56,12 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     _plot_theoretical_normal_curve(mu, sigma)
     _plot_histogram(entry.exec_times)
 
-    plt.xlabel("Time (s)")
+    plt.xlabel("Inference time (s)")
     plt.ylabel("Density")
 
     path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
-    getLogger("benchmark").info(
-        "Exporting plot for host %s to %s", entry.host, path_to_plot
+    Logger.info(
+        "Exporting normal distribution for host %s to %s", entry.host, path_to_plot
     )
 
     plt.tight_layout()

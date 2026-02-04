@@ -75,7 +75,7 @@ No data.
 \begin{{figure}}[ht]
   \centering
   \includegraphics{{{path_norm_dist}}}
-  \caption{{Normal distribution for host {entry.host}}}
+  \caption{{Inference times for host {entry.host}}}
 \end{{figure}}
 """
 
