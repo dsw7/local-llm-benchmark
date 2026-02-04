@@ -5,8 +5,8 @@ from subprocess import run, CalledProcessError, PIPE
 
 from core.consts import DIR_OUTPUT, DIR_PLOTS
 from core.dataclass_json_io import load_stats_models_from_json
-from core.exceptions import BenchmarkError
-from core.load_configs import check_and_load_config, ConfigError
+from core.exceptions import BenchmarkError, ConfigError
+from core.load_configs import check_and_load_config
 from core.models import Benchmark, ExecutionTimes
 
 Logger = getLogger("benchmark")
@@ -165,7 +165,13 @@ def _copy_report(path_report_pdf: Path) -> None:
     report_dump_location = configs.report_dump_location / "ollama_benchmark_report.pdf"
 
     Logger.info("Copying LaTeX report to %s", report_dump_location)
-    copy2(path_report_pdf, report_dump_location)
+
+    try:
+        copy2(path_report_pdf, report_dump_location)
+    except FileNotFoundError as e:
+        Logger.warning(
+            "Could not export report. The path to the file may not exist: %s", e
+        )
 
 
 def main() -> None:
