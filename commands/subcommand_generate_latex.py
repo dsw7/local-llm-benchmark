@@ -1,10 +1,12 @@
 from logging import getLogger
 from pathlib import Path
+from shutil import copy2
 from subprocess import run, CalledProcessError, PIPE
 
 from core.consts import DIR_OUTPUT, DIR_PLOTS
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
+from core.load_configs import check_and_load_config, ConfigError
 from core.models import Benchmark, ExecutionTimes
 
 Logger = getLogger("benchmark")
@@ -150,6 +152,22 @@ def _compile_latex_source(path_to_source: Path) -> None:
             Logger.info(line)
 
 
+def _copy_report(path_report_pdf: Path) -> None:
+    try:
+        configs = check_and_load_config()
+    except ConfigError as e:
+        Logger.warning("Could not export report. Failed to load configurations: %s", e)
+        return
+
+    if configs.report_dump_location is None:
+        return
+
+    report_dump_location = configs.report_dump_location / "ollama_benchmark_report.pdf"
+
+    Logger.info("Copying LaTeX report to %s", report_dump_location)
+    copy2(path_report_pdf, report_dump_location)
+
+
 def main() -> None:
     if not _DIR_LATEX_FILES.exists():
         _DIR_LATEX_FILES.mkdir()
@@ -176,7 +194,9 @@ def main() -> None:
         raise SystemExit(e) from e
 
     path_report_pdf = path_latex_source.with_suffix(".pdf")
-    Logger.info("Exported final report to %s", path_report_pdf)
+    Logger.info("Exported LaTeX report to %s", path_report_pdf)
+
+    _copy_report(path_report_pdf)
 
 
 if __name__ == "__main__":
