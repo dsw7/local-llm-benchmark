@@ -1,7 +1,6 @@
 from datetime import datetime
 from functools import cache
 from logging import getLogger
-from time import time
 
 from colorama import Back, Style
 from requests import get, exceptions
@@ -51,13 +50,12 @@ def _preload_models(servers: list[str], model: str) -> None:
 def _run_and_time_query(host: str, prompt: str, model: str) -> float:
     client = _get_client(host)
 
-    time_start = time()
-    stream = client.generate(model=model, prompt=prompt, stream=True)
+    response = client.generate(model=model, prompt=prompt, stream=False)
 
-    for chunk in stream:
-        print(chunk["response"], end="", flush=True)
+    if response.total_duration is None:
+        raise BenchmarkError("Total duration is missing from response")
 
-    return time() - time_start
+    return response.total_duration / 10**9
 
 
 def _run_and_time_queries(configs: Configs) -> Benchmark:
@@ -69,12 +67,11 @@ def _run_and_time_queries(configs: Configs) -> Benchmark:
         exec_times = []
 
         for run in range(1, configs.rounds + 1):
-            Logger.info("-" * 100)
             Logger.info(
                 Back.GREEN + f"Run {run} | {server} | {configs.model}" + Style.RESET_ALL
             )
             exec_time = _run_and_time_query(server, configs.prompt, configs.model)
-            Logger.info("Execution time: %.3fs", exec_time)
+            Logger.info("Inference time: %.3fs", exec_time)
             exec_times.append(exec_time)
 
         exec_times_per_host.append(
