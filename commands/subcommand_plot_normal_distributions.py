@@ -17,13 +17,10 @@ plt.rcParams.update(
     {
         "axes.spines.right": False,
         "axes.spines.top": False,
-        "axes.spines.left": False,
         "figure.figsize": [_PLOT_WIDTH, _PLOT_HEIGHT],
         "font.family": "monospace",
         "font.monospace": ["Courier", "Courier New", "DejaVu Sans Mono"],
         "font.size": _PLOT_FONT_SIZE,
-        "ytick.labelleft": False,
-        "ytick.left": False,
     }
 )
 
@@ -37,10 +34,10 @@ def _plot_theoretical_normal_curve(mu: float, sigma: float) -> None:
 def _plot_histogram(exec_times: list[float]) -> None:
     plt.hist(
         exec_times,
-        bins=30,
-        density=True,
-        color="g",
         alpha=0.5,
+        bins=30,
+        color="g",
+        density=True,
         edgecolor="white",
         lw=0.25,
     )
