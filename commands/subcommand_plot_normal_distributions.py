@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import Any
 
 from matplotlib import pyplot as plt
 from numpy import linspace
@@ -29,40 +28,22 @@ plt.rcParams.update(
 )
 
 
-def _plot_theoretical_distribution(mu: float, sigma: float) -> None:
+def _plot_theoretical_normal_curve(mu: float, sigma: float) -> None:
     x = linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
     f_x = norm.pdf(x, mu, sigma)
     plt.plot(x, f_x, alpha=0.5, c="k", lw=0.5)
 
 
-def _plot_exec_times(mu: float, sigma: float, exec_times: list[float]) -> None:
-    f_exec_times = norm.pdf(exec_times, mu, sigma)
-    plt.scatter(exec_times, f_exec_times.tolist(), c="k", s=12, marker="x")
-
-
-def _add_standard_deviations(mu: float, sigma: float) -> None:
-    x = [(mu + z * sigma) for z in range(-3, 4)]
-    f_x = norm.pdf(x, mu, sigma)
-
-    kwargs: dict[str, Any] = {"ha": "center", "va": "bottom", "alpha": 0.5}
-    loc_labels = -0.075 * max(f_x)
-
-    for z, ymax in zip(range(-3, 4), f_x):
-        xpos = mu + z * sigma
-        plt.vlines(xpos, 0, ymax, colors="k", lw=0.5, alpha=0.5)
-
-        if z < -1:
-            plt.text(xpos, loc_labels, rf"$\mu {z}\sigma$", **kwargs)
-        elif z == -1:
-            plt.text(xpos, loc_labels, r"$\mu - \sigma$", **kwargs)
-        elif z == 0:
-            plt.text(xpos, loc_labels, r"$\mu$", **kwargs)
-        elif z == 1:
-            plt.text(xpos, loc_labels, r"$\mu + \sigma$", **kwargs)
-        else:
-            plt.text(xpos, loc_labels, rf"$\mu + {z}\sigma$", **kwargs)
-
-    plt.ylim(-0.1 * max(f_x))
+def _plot_histogram(exec_times: list[float]) -> None:
+    plt.hist(
+        exec_times,
+        bins=30,
+        density=True,
+        color="g",
+        alpha=0.5,
+        edgecolor="white",
+        lw=0.25,
+    )
 
 
 def _plot_normal_distribution(entry: ExecutionTimes) -> None:
@@ -70,12 +51,11 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     sigma = entry.get_stdev_exec_time()
 
     plt.figure()
-
-    _plot_theoretical_distribution(mu, sigma)
-    _plot_exec_times(mu, sigma, entry.exec_times)
-    _add_standard_deviations(mu, sigma)
+    _plot_theoretical_normal_curve(mu, sigma)
+    _plot_histogram(entry.exec_times)
 
     plt.xlabel("Time (s)")
+    plt.ylabel("Density")
 
     path_to_plot = DIR_PLOTS / entry.get_pdf_name_from_host()
     getLogger("benchmark").info(
