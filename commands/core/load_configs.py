@@ -28,7 +28,7 @@ def check_and_load_config() -> Configs:
     report_dump_location: Path | None = None
 
     if "report_dump_location" in config_data["misc"]:
-        report_dump_location = config_data["misc"]["report_dump_location"]
+        report_dump_location = Path(config_data["misc"]["report_dump_location"])
 
     try:
         configs = Configs(
