@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Literal
 
 from matplotlib import pyplot as plt
 from numpy import linspace
@@ -77,8 +78,17 @@ def _plot_boxplots(entries: list[ExecutionTimes]) -> None:
         hosts.append(entry.host)
 
     plt.figure()
-    plt.ylabel("Inference time (s)")
-    plt.boxplot(exec_times, tick_labels=hosts)
+
+    orientation: Literal["vertical", "horizontal"]
+
+    if len(entries) < 3:
+        plt.ylabel("Inference time (s)")
+        orientation = "vertical"
+    else:
+        plt.xlabel("Inference time (s)")
+        orientation = "horizontal"
+
+    plt.boxplot(exec_times, tick_labels=hosts, orientation=orientation)
 
     Logger.info("Exporting boxplot to file %s", PATH_BOXPLOT)
     plt.tight_layout()
