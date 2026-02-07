@@ -3,7 +3,7 @@ from pathlib import Path
 from shutil import copy2
 from subprocess import run, CalledProcessError, PIPE
 
-from core.consts import DIR_OUTPUT, DIR_PLOTS
+from core.consts import DIR_OUTPUT, DIR_PLOTS, PATH_BOXPLOT
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError, ConfigError
 from core.load_configs import check_and_load_config
@@ -43,6 +43,19 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
     return rf"""\section{{Technical details}}
 {_assemble_test_params_subsection(benchmark_obj)}
 {_assemble_prompt_subsection(benchmark_obj.prompt)}
+\newpage
+"""
+
+
+def _assemble_network_performance_section() -> str:
+    Logger.info("Assembling overall network performance section")
+
+    return rf"""\section{{Overall network performance}}
+\begin{{figure}}[ht]
+  \centering
+  \includegraphics{{{PATH_BOXPLOT}}}
+  \caption{{Inference time comparison between servers in network}}
+\end{{figure}}
 \newpage
 """
 
@@ -123,6 +136,7 @@ def _assemble_full_text(benchmark_obj: Benchmark) -> str:
 \newpage
 
 {_assemble_technical_details_section(benchmark_obj)}
+{_assemble_network_performance_section()}
 {_assemble_host_sections(benchmark_obj)}
 \end{{document}}
 """
