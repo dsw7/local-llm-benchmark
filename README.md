@@ -17,7 +17,7 @@ I use this program to benchmark my infrastructure for the following cases:
 - [Setup](#setup)
 - [Benchmarking LLM performance](#benchmarking-llm-performance)
   - [Step 1 - Run the benchmarks](#step-1---run-the-benchmarks)
-  - [Step 2 - Generate Gaussian distributions for inference times](#step-2---generate-gaussian-distributions--boxplots-for-inference-times)
+  - [Step 2 - Generate Gaussian distributions + boxplots for inference times](#step-2---generate-gaussian-distributions--boxplots-for-inference-times)
   - [Step 3 - Generate a LaTeX report for the measurements](#step-3---generate-a-latex-report-for-the-measurements)
 
 ## About
