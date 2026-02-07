@@ -2,7 +2,7 @@
 
 echo "Please choose an option:"
 echo "[1] Run benchmarks"
-echo "[2] Generate normal distributions"
+echo "[2] Generate miscellaneous statistics"
 echo "[3] Generate LaTeX report"
 echo
 
@@ -11,7 +11,7 @@ read -rp "Option: " user_input
 if [ "$user_input" == "1" ]; then
   python3 commands/subcommand_run_benchmarks.py
 elif [ "$user_input" == "2" ]; then
-  python3 commands/subcommand_plot_normal_distributions.py
+  python3 commands/subcommand_plot_misc_statistics.py
 elif [ "$user_input" == "3" ]; then
   python3 commands/subcommand_generate_latex.py
 else

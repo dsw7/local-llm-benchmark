@@ -1,10 +1,11 @@
 from logging import getLogger
+from typing import Literal
 
 from matplotlib import pyplot as plt
 from numpy import linspace
 from scipy.stats import norm
 
-from core.consts import DIR_PLOTS
+from core.consts import DIR_PLOTS, PATH_BOXPLOT
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError
 from core.models import Benchmark, ExecutionTimes
@@ -68,11 +69,39 @@ def _plot_normal_distribution(entry: ExecutionTimes) -> None:
     plt.savefig(path_to_plot)
 
 
-def _export_normal_distribution_plots() -> None:
+def _plot_boxplots(entries: list[ExecutionTimes]) -> None:
+    exec_times = []
+    hosts = []
+
+    for entry in entries:
+        exec_times.append(entry.exec_times)
+        hosts.append(entry.host)
+
+    plt.figure()
+
+    orientation: Literal["vertical", "horizontal"]
+
+    if len(entries) < 3:
+        plt.ylabel("Inference time (s)")
+        orientation = "vertical"
+    else:
+        plt.xlabel("Inference time (s)")
+        orientation = "horizontal"
+
+    plt.boxplot(exec_times, tick_labels=hosts, orientation=orientation)
+
+    Logger.info("Exporting boxplot to file %s", PATH_BOXPLOT)
+    plt.tight_layout()
+    plt.savefig(PATH_BOXPLOT)
+
+
+def _export_all_plots() -> None:
     benchmark_obj: Benchmark = load_stats_models_from_json()
 
     for exec_times in benchmark_obj.exec_times_per_host:
         _plot_normal_distribution(exec_times)
+
+    _plot_boxplots(benchmark_obj.exec_times_per_host)
 
 
 def main() -> None:
@@ -80,7 +109,7 @@ def main() -> None:
         DIR_PLOTS.mkdir()
 
     try:
-        _export_normal_distribution_plots()
+        _export_all_plots()
     except BenchmarkError as e:
         raise SystemExit(e) from e
 

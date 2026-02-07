@@ -3,7 +3,7 @@ from pathlib import Path
 from shutil import copy2
 from subprocess import run, CalledProcessError, PIPE
 
-from core.consts import DIR_OUTPUT, DIR_PLOTS
+from core.consts import DIR_OUTPUT, DIR_PLOTS, PATH_BOXPLOT
 from core.dataclass_json_io import load_stats_models_from_json
 from core.exceptions import BenchmarkError, ConfigError
 from core.load_configs import check_and_load_config
@@ -47,16 +47,36 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 """
 
 
+def _assemble_network_performance_section() -> str:
+    Logger.info("Assembling overall network performance section")
+
+    if not PATH_BOXPLOT.exists():
+        Logger.warning("Cannot locate %s. Cannot add boxplot", PATH_BOXPLOT)
+        return r"""\subsection*{{Overall network performance}}
+No data.
+\newpage
+"""
+
+    return rf"""\section{{Overall network performance}}
+\begin{{figure}}[ht]
+  \centering
+  \includegraphics{{{PATH_BOXPLOT}}}
+  \caption{{Inference time comparison between servers in network}}
+\end{{figure}}
+\newpage
+"""
+
+
 def _assemble_stats_subsection(entry: ExecutionTimes) -> str:
     Logger.info("Assembling statistics subsection for host %s", entry.host)
 
     return rf"""\subsection*{{Statistics}}
 \begin{{tabularx}}{{\textwidth}}{{XX}}
-  Mean execution time & {entry.get_mean_exec_time(ndigits=3)} s \\
-  Standard deviation of execution time & {entry.get_stdev_exec_time(ndigits=3)} s \\
-  Median execution time & {entry.get_median_exec_time(ndigits=3)} s \\
-  Minimum execution time & {entry.get_min_exec_time(ndigits=3)} s \\
-  Maximum execution time & {entry.get_max_exec_time(ndigits=3)} s \\
+  Mean inference time & {entry.get_mean_exec_time(ndigits=3)} s \\
+  Standard deviation of inference time & {entry.get_stdev_exec_time(ndigits=3)} s \\
+  Median inference time & {entry.get_median_exec_time(ndigits=3)} s \\
+  Minimum inference time & {entry.get_min_exec_time(ndigits=3)} s \\
+  Maximum inference time & {entry.get_max_exec_time(ndigits=3)} s \\
 \end{{tabularx}}
 """
 
@@ -123,6 +143,7 @@ def _assemble_full_text(benchmark_obj: Benchmark) -> str:
 \newpage
 
 {_assemble_technical_details_section(benchmark_obj)}
+{_assemble_network_performance_section()}
 {_assemble_host_sections(benchmark_obj)}
 \end{{document}}
 """
@@ -178,7 +199,7 @@ def main() -> None:
     if not _DIR_LATEX_FILES.exists():
         _DIR_LATEX_FILES.mkdir()
 
-    Logger.info("Generating final LaTeX report")
+    Logger.info("Generating LaTeX report")
 
     try:
         benchmark_obj: Benchmark = load_stats_models_from_json()

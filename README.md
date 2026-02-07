@@ -17,7 +17,7 @@ I use this program to benchmark my infrastructure for the following cases:
 - [Setup](#setup)
 - [Benchmarking LLM performance](#benchmarking-llm-performance)
   - [Step 1 - Run the benchmarks](#step-1---run-the-benchmarks)
-  - [Step 2 - Generate Gaussian distributions for inference times](#step-2---generate-gaussian-distributions-for-inference-times)
+  - [Step 2 - Generate Gaussian distributions for inference times](#step-2---generate-gaussian-distributions--boxplots-for-inference-times)
   - [Step 3 - Generate a LaTeX report for the measurements](#step-3---generate-a-latex-report-for-the-measurements)
 
 ## About
@@ -58,7 +58,7 @@ All values are provided in seconds
 ```
 If sufficient, one can stop here.
 
-### Step 2 - Generate Gaussian distributions for inference times
+### Step 2 - Generate Gaussian distributions + boxplots for inference times
 Set up a Python virtual environment as before and run the bash script:
 ```bash
 ./benchmark
@@ -74,7 +74,13 @@ example:
 In this example, 50 trials were performed. The mean inference time is around
 2.15 seconds. One value appears to be more than 3 standard deviations away from
 the mean, and this value could be interpreted as an outlier (perhaps as a
-result of a spike in GPU demand).
+result of a spike in GPU demand). The program will also generate boxplots for
+the inference times across servers in the network. This can be useful for
+evaluating the performance of individual servers with respect to the network:
+
+<p align="center">
+  <img width=600 src=./docs/boxplot.svg>
+</p>
 
 ### Step 3 - Generate a LaTeX report for the measurements
 As before, run the bash script:
