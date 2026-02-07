@@ -50,6 +50,13 @@ def _assemble_technical_details_section(benchmark_obj: Benchmark) -> str:
 def _assemble_network_performance_section() -> str:
     Logger.info("Assembling overall network performance section")
 
+    if not PATH_BOXPLOT.exists():
+        Logger.warning("Cannot locate %s. Cannot add boxplot", PATH_BOXPLOT)
+        return r"""\subsection*{{Overall network performance}}
+No data.
+\newpage
+"""
+
     return rf"""\section{{Overall network performance}}
 \begin{{figure}}[ht]
   \centering
