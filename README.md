@@ -8,6 +8,7 @@ Many projects exist for benchmarking models themselves, such as
 [SuperGLUE](https://super.gluebenchmark.com/).
 
 I use this program to benchmark my infrastructure for the following cases:
+- When using Claude Code with Ollama
 - When running [FuncGraft](https://github.com/dsw7/FuncGraft) in [local
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
 - When running [GPTifier](https://github.com/dsw7/GPTifier) commands via the Ollama stream
