@@ -18,10 +18,10 @@ I use this program to benchmark my infrastructure for the following cases:
 - [Benchmarking inference times](#benchmarking-inference-times)
 
 ## Benchmarking inference times
-- See [Benchmarking inference times](./benchmarking_inference_times/README.md)
-
 This suite runs a dummy prompt against a specified LLM on several machines and
 several times. The execution times are gathered from which various basic
 statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
 performance of my LLMs on prem.
+
+➡️ See [Benchmarking inference times](./benchmarking_inference_times)
