@@ -9,7 +9,7 @@ Ensure that Ollama is running in the background and then run:
 ```bash
 claude --model=<the-model-to-test>
 ```
-Then run:
+Then from the Claude shell run:
 ```
 /clear
 ```
