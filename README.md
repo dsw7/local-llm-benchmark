@@ -28,8 +28,10 @@ performance of my LLMs on prem.
 
 The suite will generate Gaussian distributions for the various permutations
 akin to:
+
 <p align="center">
-  <img width=600 src=./benchmark_inference_times/docs/example_gemma_3_n_50.svg>
+  <img width=500 src=./benchmark_inference_times/docs/example_gemma_3_n_50.svg>
 </p>
+
 In this example, 50 trials were performed. The mean inference time is around
 2.15 seconds.
