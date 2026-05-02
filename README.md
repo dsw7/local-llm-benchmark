@@ -18,15 +18,18 @@ I use this program to benchmark my infrastructure for the following cases:
 - [Benchmark inference times](#benchmark-inference-times)
 
 ## Benchmark inference times
+- See [Benchmarking inference times](./benchmark_inference_times)
+
 This suite runs a dummy prompt against a specified LLM on several machines and
 several times. The inference times are gathered from which various basic
 statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
 performance of my LLMs on prem.
 
-The suite will generate Gaussian distributions for the various permutations:
+The suite will generate Gaussian distributions for the various permutations
+akin to:
 <p align="center">
-  <img width=600 src=./docs/example_gemma_3_n_50.svg>
+  <img width=600 src=./benchmark_inference_times/docs/example_gemma_3_n_50.svg>
 </p>
-
-- See [Benchmarking inference times](./benchmark_inference_times)
+In this example, 50 trials were performed. The mean inference time is around
+2.15 seconds.
