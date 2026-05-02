@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+
 import sys
-import subprocess
 from pathlib import Path
+from subprocess import run, CalledProcessError
 
 
 def compile_source() -> Path:
@@ -17,19 +19,24 @@ def compile_source() -> Path:
             command.append(str(p))
 
     try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
+        run(command, check=True)
+    except CalledProcessError as e:
         sys.exit(str(e))
 
     return path_exec
 
 
-def run_mem_check(path_exec: Path) -> None:
-    command = ["valgrind", "--leak-check=full", f"./{path_exec}", "bar"]
+def run_mem_check(path_exec: Path, leak_memory: bool) -> None:
+    command = ["valgrind", "--leak-check=full", f"./{path_exec}"]
+
+    if leak_memory:
+        command.append("leak")
+    else:
+        command.append("no-leak")
 
     try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
+        run(command, check=True)
+    except CalledProcessError as e:
         sys.exit(str(e))
 
 
