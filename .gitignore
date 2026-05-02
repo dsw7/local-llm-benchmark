@@ -47,8 +47,6 @@ requirements.txt
 .dmypy.json
 dmypy.json
 
-# Project config
-configs.toml
-
-# Misc. project output files
-output
+# Benchmarking inference times
+benchmark_inference_times/configs.toml
+benchmark_inference_times/output
