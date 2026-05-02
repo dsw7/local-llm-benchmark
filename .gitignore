@@ -50,3 +50,6 @@ dmypy.json
 # Benchmarking inference times
 benchmark_inference_times/configs.toml
 benchmark_inference_times/output
+
+# Benchmarking Claude memory leak fix skill
+benchmark_claude_skill_fix_memleak/build
