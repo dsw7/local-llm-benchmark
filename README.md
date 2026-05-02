@@ -42,7 +42,7 @@ prompt and IP addresses).
 ### Step 1 - Run the benchmarks
 Set up a Python virtual environment and run the bash script:
 ```bash
-./benchmark
+./run
 ```
 And input <kbd>1</kbd> when prompted. The program will gather `rounds`
 (specified via `configs.toml`) number of inference times for `prompt` against
@@ -62,7 +62,7 @@ If sufficient, one can stop here.
 ### Step 2 - Generate Gaussian distributions + boxplots for inference times
 Set up a Python virtual environment as before and run the bash script:
 ```bash
-./benchmark
+./run
 ```
 Then input <kbd>2</kbd> when prompted. The program will generate a set of
 Gaussian distributions for the inference times obtained from each machine. For
@@ -86,7 +86,7 @@ evaluating the performance of individual servers with respect to the network:
 ### Step 3 - Generate a LaTeX report for the measurements
 As before, run the bash script:
 ```bash
-./benchmark
+./run
 ```
 Then input <kbd>3</kbd> when prompted. The program will generate a full,
 comprehensive report of all the statistics gathered as part of the benchmarking
