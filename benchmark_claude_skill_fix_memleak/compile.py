@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from argparse import ArgumentParser
 from pathlib import Path
 from subprocess import run, CalledProcessError
 
@@ -41,8 +42,20 @@ def run_mem_check(path_exec: Path, leak_memory: bool) -> None:
 
 
 def main() -> None:
+    parser = ArgumentParser(
+        description="Compile C++ source and run Valgrind memory leak checks."
+    )
+    parser.add_argument(
+        "--leak-memory",
+        action="store_true",
+        default=False,
+        help="Trigger a memory leak and catch the leak using Valgrind",
+    )
+
+    args = parser.parse_args()
+
     path_exec = compile_source()
-    run_mem_check(path_exec)
+    run_mem_check(path_exec, args.leak_memory)
 
 
 if __name__ == "__main__":
