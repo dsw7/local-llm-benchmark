@@ -2,9 +2,9 @@
 .DEFAULT_GOAL = py
 
 clean:
-	@rm -rfv output
+	@rm -rfv benchmark_inference_times/output
 
 py:
-	@black commands
-	@pylint --exit-zero commands
-	@mypy --strict commands
+	@black benchmark_inference_times/src
+	@pylint --exit-zero benchmark_inference_times/src
+	@mypy --strict benchmark_inference_times/src
