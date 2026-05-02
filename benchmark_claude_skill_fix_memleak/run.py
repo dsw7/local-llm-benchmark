@@ -5,7 +5,8 @@ from subprocess import run, CalledProcessError
 
 
 def compile_source() -> Path:
-    build_dir = Path("build")
+    root_dir = Path(__file__).resolve().parent
+    build_dir = root_dir / "build"
 
     if not build_dir.exists():
         build_dir.mkdir()
@@ -13,7 +14,8 @@ def compile_source() -> Path:
     path_exec = build_dir / "main.out"
     command = ["g++", "-g", f"--output={path_exec}"]
 
-    for p in Path("src").iterdir():
+    src_dir = root_dir / "src"
+    for p in src_dir.iterdir():
         if p.suffix == ".cpp":
             command.append(str(p))
 
@@ -26,7 +28,7 @@ def compile_source() -> Path:
 
 
 def run_mem_check(path_exec: Path, leak_memory: bool) -> None:
-    command = ["valgrind", "--leak-check=full", f"./{path_exec}"]
+    command = ["valgrind", "--leak-check=full", f"{path_exec}"]
 
     if leak_memory:
         command.append("leak")
