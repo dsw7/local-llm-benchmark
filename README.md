@@ -14,14 +14,19 @@ I use this program to benchmark my infrastructure for the following cases:
   mode](https://github.com/dsw7/FuncGraft?tab=readme-ov-file#toggling-between-llm-providers)
 - When running [GPTifier](https://github.com/dsw7/GPTifier) commands via the Ollama stream
 
-## Table of Contents
-- [Benchmarking inference times](#benchmarking-inference-times)
+## Available suites
+- [Benchmark inference times](#benchmark-inference-times)
 
-## Benchmarking inference times
+## Benchmark inference times
 This suite runs a dummy prompt against a specified LLM on several machines and
-several times. The execution times are gathered from which various basic
+several times. The inference times are gathered from which various basic
 statistics are computed. This allows me to get a rough estimation of how
 variables such as GPU models, available VRAM, etc., impact the overall
 performance of my LLMs on prem.
 
-➡️ See [Benchmarking inference times](./benchmarking_inference_times)
+The suite will generate Gaussian distributions for the various permutations:
+<p align="center">
+  <img width=600 src=./docs/example_gemma_3_n_50.svg>
+</p>
+
+- See [Benchmarking inference times](./benchmark_inference_times)
