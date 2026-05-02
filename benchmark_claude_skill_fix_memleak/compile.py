@@ -25,7 +25,7 @@ def compile_source() -> Path:
 
 
 def run_mem_check(path_exec: Path) -> None:
-    command = ["valgrind", "--leak-check=full", f"./{path_exec}"]
+    command = ["valgrind", "--leak-check=full", f"./{path_exec}", "bar"]
 
     try:
         subprocess.run(command, check=True)
