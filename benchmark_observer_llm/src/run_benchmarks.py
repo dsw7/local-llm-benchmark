@@ -1,17 +1,24 @@
+import logging
+
 from datetime import datetime
 from functools import cache
-from logging import getLogger
 
 from colorama import Back, Style
 from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
 
-from core.exceptions import BenchmarkError, ConfigError
-from core.load_configs import check_and_load_config
-from core.models import Configs, ExecutionTimes, Benchmark
+from exceptions import BenchmarkError, ConfigError
+from load_configs import check_and_load_config
+from models import Configs, ExecutionTimes, Benchmark
 
-Logger = getLogger("benchmark")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s %(asctime)s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+
+Logger = logging.getLogger("benchmark")
 
 
 @cache

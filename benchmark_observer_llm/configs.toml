@@ -1,0 +1,17 @@
+[misc]
+prompt = """
+Generate C code for reading a file.
+Only return the code. No explanation is needed.
+The code should be indented by exactly 4 spaces.
+"""
+model = "gemma3:latest"
+rounds = 5
+# report_dump_location = "/mnt/c/Users/dds34/Dropbox/"
+
+[[servers]]
+host = "localhost"
+port = 11434
+
+#[[servers]]
+#host = "10.0.0.115"
+#port = 11434
