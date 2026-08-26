@@ -13,10 +13,6 @@ class Configs:
 @dataclass
 class ExecutionTimes:
     exec_times: list[float]
-    host: str
-    model: str
-    prompt: str
-    sample_size: int
 
     def get_mean_exec_time(self, ndigits: int | None = None) -> float:
         mean_val = mean(self.exec_times)

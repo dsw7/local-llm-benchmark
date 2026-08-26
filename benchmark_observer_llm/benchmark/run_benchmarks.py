@@ -21,7 +21,7 @@ def _check_server_up(server: str) -> None:
     get(f"http://{server}", timeout=5)
 
 
-def _check_models_exist(server: str, model: str) -> None:
+def _check_model_exists_(server: str, model: str) -> None:
     client = _get_client(server)
     response = client.list()
 
@@ -34,7 +34,7 @@ def _check_models_exist(server: str, model: str) -> None:
         )
 
 
-def _preload_models(server: str, model: str) -> None:
+def _preload_model(server: str, model: str) -> None:
     client = _get_client(server)
     Logger.info("Preloading %s on server %s", model, server)
 
@@ -58,35 +58,27 @@ def _run_and_time_queries(configs: Configs) -> ExecutionTimes:
     exec_times = []
 
     for run in range(1, configs.rounds + 1):
-        Logger.info(
-            Back.GREEN
-            + f"Run {run} | {configs.server} | {configs.model}"
-            + Style.RESET_ALL
-        )
+        Logger.info(Back.GREEN + f" Run {run} " + Style.RESET_ALL)
+
         exec_time = _run_and_time_query(configs.server, configs.prompt, configs.model)
         Logger.info("Inference time: %.3fs", exec_time)
+
         exec_times.append(exec_time)
 
-    return ExecutionTimes(
-        host=configs.server,
-        exec_times=exec_times,
-        model=configs.model,
-        prompt=configs.prompt,
-        sample_size=configs.rounds,
-    )
+    return ExecutionTimes(exec_times=exec_times)
 
 
-def _print_summary_to_stdout(exec_times: ExecutionTimes) -> None:
+def _print_summary_to_stdout(configs: Configs, exec_times: ExecutionTimes) -> None:
     stats_transposed = [
         [
-            exec_times.host,
-            exec_times.model,
+            configs.server,
+            configs.model,
             exec_times.get_mean_exec_time(ndigits=5),
             exec_times.get_stdev_exec_time(ndigits=5),
             exec_times.get_median_exec_time(ndigits=5),
             exec_times.get_min_exec_time(),
             exec_times.get_max_exec_time(),
-            exec_times.sample_size,
+            configs.rounds,
         ]
     ]
 
@@ -105,12 +97,12 @@ def run_benchmarks(configs: Configs) -> None:
     except exceptions.ConnectionError as e:
         raise BenchmarkError(str(e)) from e
 
-    _check_models_exist(configs.server, configs.model)
-    _preload_models(configs.server, configs.model)
+    _check_model_exists_(configs.server, configs.model)
+    _preload_model(configs.server, configs.model)
 
     try:
         exec_times: ExecutionTimes = _run_and_time_queries(configs)
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
-    _print_summary_to_stdout(exec_times)
+    _print_summary_to_stdout(configs, exec_times)
