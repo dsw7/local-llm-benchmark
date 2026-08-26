@@ -47,7 +47,7 @@ the amount of time it takes for Claude to understand the memory leak when
 paired with a locally hosted LLM.
 
 ## Benchmark observer LLM
-- See [Benchmarking observer LLMs](./benchmark_observer_llms)
+- See [Benchmarking observer LLMs](./benchmark_observer_llm)
 
 This suite benchmarks a simple binary classifier. The classifier simply checks
 whether an incoming prompt relates to editing code. This is achieved through a
