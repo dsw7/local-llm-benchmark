@@ -1,48 +1,18 @@
-from functools import cache
 from logging import getLogger
 
 from colorama import Back, Style
-from requests import get, exceptions
+from requests import exceptions
 from tabulate import tabulate
-from ollama import Client
 
 from .exceptions import BenchmarkError
 from .models import Configs, ExecutionTimes
+from .helpers import get_client, check_server_up, check_model_exists, preload_model
 
 Logger = getLogger("benchmark")
 
 
-@cache
-def _get_client(host: str) -> Client:
-    return Client(host)
-
-
-def _check_server_up(server: str) -> None:
-    get(f"http://{server}", timeout=5)
-
-
-def _check_model_exists_(server: str, model: str) -> None:
-    client = _get_client(server)
-    response = client.list()
-
-    for list_model in response.models:
-        if list_model.model == model:
-            break
-    else:
-        raise BenchmarkError(
-            f"Model '{model}' not found on server '{server.split(':')[0]}'"
-        )
-
-
-def _preload_model(server: str, model: str) -> None:
-    client = _get_client(server)
-    Logger.info("Preloading %s on server %s", model, server)
-
-    client.generate(model=model, prompt="What is 3 + 5?", keep_alive="30m")
-
-
 def _run_and_time_query(host: str, prompt: str, model: str) -> float:
-    client = _get_client(host)
+    client = get_client(host)
 
     response = client.generate(model=model, prompt=prompt, stream=False)
 
@@ -93,12 +63,14 @@ def _print_summary_to_stdout(configs: Configs, exec_times: ExecutionTimes) -> No
 
 def run_benchmarks(configs: Configs) -> None:
     try:
-        _check_server_up(configs.server)
+        check_server_up(configs.server)
     except exceptions.ConnectionError as e:
         raise BenchmarkError(str(e)) from e
 
-    _check_model_exists_(configs.server, configs.model)
-    _preload_model(configs.server, configs.model)
+    check_model_exists(configs.server, configs.model)
+
+    Logger.info("Preloading model %s", configs.model)
+    preload_model(configs.server, configs.model)
 
     try:
         exec_times: ExecutionTimes = _run_and_time_queries(configs)
