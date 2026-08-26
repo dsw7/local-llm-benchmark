@@ -1,15 +1,22 @@
 from logging import getLogger
 from functools import cache
+from json import dumps, loads
 
 from colorama import Back, Style
 from requests import exceptions
 from tabulate import tabulate
+from pydantic import BaseModel, Field
 
 from .exceptions import BenchmarkError
 from .models import Configs, ExecutionTimes
 from .helpers import get_client, check_server_up, check_model_exists, preload_model
 
 Logger = getLogger("benchmark")
+
+
+class ClassificationSchema(BaseModel):
+    reasoning: str = Field(description="brief explanation of your classification")
+    valid_instructions: bool
 
 
 @cache
@@ -37,15 +44,18 @@ def _run_and_time_query(host: str, prompt: str, model: str) -> float:
     client = get_client(host)
 
     response = client.generate(
+        format=ClassificationSchema.model_json_schema(),
         model=model,
-        system=dummy_system_prompt(),
+        options={"temperature": 0},
         prompt=dummy_user_prompt(prompt),
         stream=False,
+        system=dummy_system_prompt(),
     )
-    print(response)
 
     if response.total_duration is None:
         raise BenchmarkError("Total duration is missing from response")
+
+    Logger.info("Response:\n%s", dumps(loads(response.response), indent=4))
 
     return response.total_duration / 10**9
 
