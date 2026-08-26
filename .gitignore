@@ -52,7 +52,7 @@ benchmark_inference_times/configs.toml
 benchmark_inference_times/output
 
 # Benchmarking observer LLM inference times
-benchmark_inference_times/configs.toml
+benchmark_observer_llm/configs.toml
 
 # Benchmarking Claude memory leak fix skill
 benchmark_claude_skill_fix_memleak/build
