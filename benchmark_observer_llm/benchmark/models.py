@@ -5,7 +5,6 @@ from statistics import mean, stdev, median
 @dataclass
 class Configs:
     model: str
-    prompt: str
     rounds: int
     server: str
 

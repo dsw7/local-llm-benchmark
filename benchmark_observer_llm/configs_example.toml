@@ -1,5 +1,4 @@
 [misc]
-prompt = "Generate C code for reading a file. Only return the code. No explanation is needed."
 model = "devstral-small-2"
 rounds = 3
 

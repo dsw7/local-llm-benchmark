@@ -27,7 +27,6 @@ def check_and_load_config() -> Configs:
     try:
         configs = Configs(
             model=config_data["misc"]["model"],
-            prompt=config_data["misc"]["prompt"],
             rounds=_clamp_num_rounds(config_data["misc"]["rounds"]),
             server=server,
         )
