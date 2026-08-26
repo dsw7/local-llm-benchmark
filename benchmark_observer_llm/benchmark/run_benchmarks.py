@@ -1,24 +1,16 @@
-import logging
-
 from datetime import datetime
 from functools import cache
+from logging import getLogger
 
 from colorama import Back, Style
 from requests import get, exceptions
 from tabulate import tabulate
 from ollama import Client
 
-from exceptions import BenchmarkError, ConfigError
-from load_configs import check_and_load_config
-from models import Configs, ExecutionTimes, Benchmark
+from .exceptions import BenchmarkError
+from .models import Configs, ExecutionTimes, Benchmark
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(levelname)s %(asctime)s %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S",
-)
-
-Logger = logging.getLogger("benchmark")
+Logger = getLogger("benchmark")
 
 
 @cache
@@ -120,7 +112,7 @@ def _print_summary_to_stdout(benchmark_obj: Benchmark) -> None:
     Logger.info("-" * 100)
 
 
-def _run_benchmarks(configs: Configs) -> None:
+def run_benchmarks(configs: Configs) -> None:
     try:
         _check_servers_up(configs.servers)
     except exceptions.ConnectionError as e:
@@ -135,19 +127,3 @@ def _run_benchmarks(configs: Configs) -> None:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
     _print_summary_to_stdout(benchmark_obj)
-
-
-def main() -> None:
-    try:
-        configs = check_and_load_config()
-    except ConfigError as e:
-        raise SystemExit(e) from e
-
-    try:
-        _run_benchmarks(configs)
-    except BenchmarkError as e:
-        raise SystemExit(e) from e
-
-
-if __name__ == "__main__":
-    main()
