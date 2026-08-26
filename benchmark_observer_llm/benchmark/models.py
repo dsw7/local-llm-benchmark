@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pathlib import Path
 from statistics import mean, stdev, median
 
 
@@ -7,9 +6,8 @@ from statistics import mean, stdev, median
 class Configs:
     model: str
     prompt: str
-    report_dump_location: Path | None
     rounds: int
-    servers: list[str]
+    server: str
 
 
 @dataclass

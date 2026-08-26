@@ -1,5 +1,4 @@
 from os import path
-from pathlib import Path
 from tomllib import load, TOMLDecodeError
 
 from .exceptions import ConfigError
@@ -23,20 +22,14 @@ def check_and_load_config() -> Configs:
         except TOMLDecodeError as e:
             raise ConfigError(f"Configurations can't be decoded: {e}") from e
 
-    servers = [f'{s["host"]}:{s["port"]}' for s in config_data["servers"]]
-
-    report_dump_location: Path | None = None
-
-    if "report_dump_location" in config_data["misc"]:
-        report_dump_location = Path(config_data["misc"]["report_dump_location"])
+    server = f'{config_data["server"]["host"]}:{config_data["server"]["port"]}'
 
     try:
         configs = Configs(
             model=config_data["misc"]["model"],
             prompt=config_data["misc"]["prompt"],
-            report_dump_location=report_dump_location,
             rounds=_clamp_num_rounds(config_data["misc"]["rounds"]),
-            servers=servers,
+            server=server,
         )
     except KeyError as e:
         raise ConfigError("One or more configurations is missing", e) from e
