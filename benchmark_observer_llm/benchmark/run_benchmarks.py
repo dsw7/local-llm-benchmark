@@ -1,4 +1,3 @@
-from datetime import datetime
 from functools import cache
 from logging import getLogger
 
@@ -8,7 +7,7 @@ from tabulate import tabulate
 from ollama import Client
 
 from .exceptions import BenchmarkError
-from .models import Configs, ExecutionTimes, Benchmark
+from .models import Configs, ExecutionTimes
 
 Logger = getLogger("benchmark")
 
@@ -53,9 +52,7 @@ def _run_and_time_query(host: str, prompt: str, model: str) -> float:
     return response.total_duration / 10**9
 
 
-def _run_and_time_queries(configs: Configs) -> Benchmark:
-    exec_times_per_host: list[ExecutionTimes] = []
-
+def _run_and_time_queries(configs: Configs) -> ExecutionTimes:
     Logger.info("Number of rounds per machine: %i", configs.rounds)
 
     exec_times = []
@@ -70,35 +67,27 @@ def _run_and_time_queries(configs: Configs) -> Benchmark:
         Logger.info("Inference time: %.3fs", exec_time)
         exec_times.append(exec_time)
 
-    exec_times_per_host.append(
-        ExecutionTimes(
-            exec_times=exec_times,
-            host=configs.server,
-        )
-    )
-
-    return Benchmark(
-        exec_times_per_host=exec_times_per_host,
+    return ExecutionTimes(
+        host=configs.server,
+        exec_times=exec_times,
         model=configs.model,
         prompt=configs.prompt,
         sample_size=configs.rounds,
-        timestamp=datetime.now().isoformat(),
     )
 
 
-def _print_summary_to_stdout(benchmark_obj: Benchmark) -> None:
+def _print_summary_to_stdout(exec_times: ExecutionTimes) -> None:
     stats_transposed = [
         [
-            s.host,
-            benchmark_obj.model,
-            s.get_mean_exec_time(ndigits=5),
-            s.get_stdev_exec_time(ndigits=5),
-            s.get_median_exec_time(ndigits=5),
-            s.get_min_exec_time(),
-            s.get_max_exec_time(),
-            benchmark_obj.sample_size,
+            exec_times.host,
+            exec_times.model,
+            exec_times.get_mean_exec_time(ndigits=5),
+            exec_times.get_stdev_exec_time(ndigits=5),
+            exec_times.get_median_exec_time(ndigits=5),
+            exec_times.get_min_exec_time(),
+            exec_times.get_max_exec_time(),
+            exec_times.sample_size,
         ]
-        for s in benchmark_obj.exec_times_per_host
     ]
 
     Logger.info("-" * 100)
@@ -120,8 +109,8 @@ def run_benchmarks(configs: Configs) -> None:
     _preload_models(configs.server, configs.model)
 
     try:
-        benchmark_obj: Benchmark = _run_and_time_queries(configs)
+        exec_times: ExecutionTimes = _run_and_time_queries(configs)
     except KeyboardInterrupt as e:
         raise BenchmarkError("\nBenchmarking was manually aborted!") from e
 
-    _print_summary_to_stdout(benchmark_obj)
+    _print_summary_to_stdout(exec_times)
