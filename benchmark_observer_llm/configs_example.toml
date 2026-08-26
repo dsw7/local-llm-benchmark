@@ -1,0 +1,7 @@
+[misc]
+model = "devstral-small-2"
+rounds = 3
+
+[server]
+host = "localhost"
+port = 11434
