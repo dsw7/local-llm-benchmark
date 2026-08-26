@@ -15,9 +15,6 @@ class ExecutionTimes:
     exec_times: list[float]
     host: str
 
-    def get_pdf_name_from_host(self) -> str:
-        return f"results_{self.host.replace(':', '_')}.pdf"
-
     def get_mean_exec_time(self, ndigits: int | None = None) -> float:
         mean_val = mean(self.exec_times)
 
